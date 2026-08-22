@@ -1,0 +1,41 @@
+:root {
+  color-scheme: dark;
+  --background: #120d0e;
+  --surface: rgba(45, 29, 31, 0.86);
+  --wine: #8e2638;
+  --gold: #d9a441;
+  --cream: #f4ead5;
+  --muted: #c6b8aa;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--background); color: var(--cream); }
+body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+a { color: inherit; text-decoration: none; }
+
+.landing {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: radial-gradient(circle at 70% 40%, #4b2026, transparent 36%), var(--background);
+}
+.landing section { max-width: 760px; }
+.eyebrow { color: var(--gold); letter-spacing: .14em; text-transform: uppercase; }
+h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-height: .95; margin: 1rem 0; }
+.lead { color: var(--muted); font-size: 1.2rem; line-height: 1.6; max-width: 650px; }
+.primaryAction { display: inline-block; margin-top: 1rem; padding: .9rem 1.2rem; background: var(--wine); border: 1px solid #c35260; border-radius: 999px; }
+.explorePage { height: 100vh; overflow: hidden; }
+.topbar { height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; border-bottom: 1px solid #5b4032; }
+.topbar nav { display: flex; gap: 2rem; }
+.experience { height: calc(100vh - 72px); display: grid; grid-template-columns: minmax(0, 1fr) 380px; }
+.scene { min-width: 0; background: radial-gradient(circle, #2d2020, #100c0d); }
+.sidePanel { margin: 1.5rem 1.5rem 1.5rem 0; padding: 1.5rem; border: 1px solid #745a48; border-radius: 24px; background: var(--surface); backdrop-filter: blur(18px); }
+.scoreGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: 2rem; }
+.score { padding: 1rem .35rem; text-align: center; border: 1px solid #6f5444; border-radius: 16px; }
+.score strong { display: block; font-family: Georgia, serif; font-size: 1.8rem; color: var(--gold); }
+@media (max-width: 800px) {
+  .experience { grid-template-columns: 1fr; grid-template-rows: 55vh 1fr; overflow: auto; }
+  .sidePanel { margin: 0; border-radius: 24px 24px 0 0; }
+  .topbar nav { display: none; }
+}

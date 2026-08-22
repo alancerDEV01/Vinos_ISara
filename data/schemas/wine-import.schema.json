@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sara.bo/schemas/wine-import.schema.json",
+  "title": "Importación de vino boliviano",
+  "type": "object",
+  "required": ["name", "winery", "region", "wineType", "source"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "winery": {"type": "string", "minLength": 1},
+    "region": {"type": "string", "minLength": 1},
+    "municipality": {"type": ["string", "null"]},
+    "altitudeMeters": {"type": ["number", "null"], "minimum": 0},
+    "vintage": {"type": ["integer", "null"], "minimum": 1900},
+    "wineType": {
+      "enum": ["white", "rose", "red", "orange", "sparkling", "sweet", "other"]
+    },
+    "source": {
+      "type": "object",
+      "required": ["title", "sourceType"],
+      "properties": {
+        "title": {"type": "string"},
+        "url": {"type": ["string", "null"], "format": "uri"},
+        "sourceType": {"enum": ["producer", "publication", "panel", "laboratory", "curated"]}
+      }
+    }
+  },
+  "additionalProperties": false
+}

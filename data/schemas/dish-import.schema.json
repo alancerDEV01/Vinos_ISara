@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sara.bo/schemas/dish-import.schema.json",
+  "title": "Importación de preparación boliviana",
+  "type": "object",
+  "required": ["name", "department", "intensity", "fat", "heat", "source"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "variant": {"type": ["string", "null"]},
+    "department": {"type": "string", "minLength": 1},
+    "intensity": {"type": "number", "minimum": 0, "maximum": 1},
+    "fat": {"type": "number", "minimum": 0, "maximum": 1},
+    "heat": {"type": "number", "minimum": 0, "maximum": 1},
+    "source": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false
+}

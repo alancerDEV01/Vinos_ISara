@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-draft",
+  "status": "draft",
+  "families": [
+    {"code": "fruit", "label": "Frutal"},
+    {"code": "floral", "label": "Floral"},
+    {"code": "herbal", "label": "Herbal y vegetal"},
+    {"code": "spice", "label": "Especiado"},
+    {"code": "aging", "label": "Crianza"},
+    {"code": "texture", "label": "Textura"}
+  ],
+  "terms": [
+    {"code": "blackberry", "label": "Mora", "family": "fruit", "synonyms": []},
+    {"code": "blackcurrant", "label": "Grosella negra", "family": "fruit", "synonyms": ["cassis"]},
+    {"code": "violet", "label": "Violeta", "family": "floral", "synonyms": []},
+    {"code": "black_pepper", "label": "Pimienta negra", "family": "spice", "synonyms": []},
+    {"code": "vanilla", "label": "Vainilla", "family": "aging", "synonyms": []},
+    {"code": "velvety", "label": "Aterciopelado", "family": "texture", "synonyms": []}
+  ]
+}
