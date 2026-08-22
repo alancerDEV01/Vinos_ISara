@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { ExtrudeGeometry, Path, Shape, ShapeUtils, Vector2 } from "three";
+import { ExtrudeGeometry, Shape, ShapeUtils, Vector2 } from "three";
 import type { DepartmentCollection, DepartmentFeature, LinearRing, PolygonCoordinates } from "./geojson";
 
 const CENTER_LONGITUDE = -63.55;
@@ -25,12 +25,12 @@ function normalizeRing(ring: LinearRing, clockwise: boolean): Vector2[] {
 function polygonToShape(polygon: PolygonCoordinates): Shape | null {
   if (!polygon[0] || polygon[0].length < 4) return null;
   const contour = normalizeRing(polygon[0], true);
-  const shape = new Shape(contour);
-  for (const hole of polygon.slice(1)) {
-    if (hole.length < 4) continue;
-    shape.holes.push(new Path(normalizeRing(hole, false)));
-  }
-  return shape;
+
+  // The source keeps lakes and salars as inner rings. Extruding those rings
+  // produces deep walls and triangulation spikes, especially in Oruro and
+  // Potosi. The interactive department layer is a solid administrative map;
+  // water bodies can be rendered later as a separate, flat overlay.
+  return new Shape(contour);
 }
 
 function featurePolygons(feature: DepartmentFeature): PolygonCoordinates[] {
@@ -71,9 +71,9 @@ function Department({
         const geometry = new ExtrudeGeometry(shape, {
           depth: selected ? 0.34 : 0.22,
           bevelEnabled: true,
-          bevelSegments: 2,
-          bevelSize: 0.025,
-          bevelThickness: 0.025,
+          bevelSegments: 1,
+          bevelSize: 0.012,
+          bevelThickness: 0.012,
           curveSegments: 2,
         });
         geometry.rotateX(-Math.PI / 2);
