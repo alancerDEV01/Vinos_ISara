@@ -328,7 +328,7 @@ Actualmente existe un endpoint demostrativo temporal para comprobar el contrato 
 ### Requisitos
 
 - Node.js 22 o superior.
-- pnpm 10 o superior.
+- pnpm 11.19 o superior.
 - Python 3.12 o superior.
 - Docker con Docker Compose.
 
@@ -443,9 +443,9 @@ No se utilizará Kubernetes en el MVP. Primero se escalarán consultas, caché, 
 ### Fase 2 — Mapa 3D
 
 - [ ] Obtener GeoJSON con fuente y licencia.
-- [ ] Validar y simplificar los nueve departamentos.
-- [ ] Extruir departamentos con Three.js.
-- [ ] Selección, hover y viajes de cámara.
+- [x] Validar y simplificar los nueve departamentos.
+- [x] Extruir departamentos con Three.js.
+- [x] Selección, hover y viajes de cámara.
 - [ ] Tarija, Chuquisaca, Cinti y Valle Central.
 - [ ] Marcadores conectados con la API.
 - [ ] Modo 2D y rendimiento móvil.
@@ -482,7 +482,7 @@ Ya existe:
 
 - estructura de 80 archivos;
 - monorepo web/Python;
-- escena 3D arquitectónica temporal;
+- primer mapa 3D real con los nueve departamentos;
 - interfaz inicial de exploración;
 - FastAPI con endpoints de salud;
 - endpoint demostrativo del motor;
@@ -498,7 +498,7 @@ Ya existe:
 
 Todavía falta:
 
-- reemplazar la geometría temporal por el mapa oficial;
+- verificar formalmente licencia, vigencia y precisión de la geometría del OEP;
 - implementar persistencia y migraciones reales;
 - cargar y revisar el dataset inicial;
 - construir los catálogos completos;

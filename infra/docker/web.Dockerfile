@@ -1,4 +1,5 @@
 FROM node:22-alpine AS build
+ENV NEXT_STANDALONE=true
 WORKDIR /workspace
 RUN corepack enable
 COPY package.json pnpm-workspace.yaml ./
