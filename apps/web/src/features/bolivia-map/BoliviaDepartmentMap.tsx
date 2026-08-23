@@ -303,21 +303,21 @@ function Department({
       {selected && focused ? null : outlines.map((points, index) => (
         <group key={`outline-${index}`}>
           <Line
-            color={selected ? "#3f2d12" : "#211a12"}
-            depthTest={!selected}
-            lineWidth={selected ? 4.1 : hovered ? 3.2 : 2.15}
-            opacity={selected ? 0.96 : 0.46}
+            color={selected ? "#3f2d12" : hovered ? "#33230f" : "#071019"}
+            depthTest={false}
+            lineWidth={selected ? 4.1 : hovered ? 3 : 1.7}
+            opacity={selected ? 0.96 : hovered ? 0.88 : 0.72}
             points={points}
-            renderOrder={selected ? 20 : 0}
+            renderOrder={selected ? 20 : hovered ? 12 : 8}
             transparent
           />
           <Line
-            color={selected ? "#ffd76a" : hovered ? "#fff0c4" : "#e7d8b6"}
-            depthTest={!selected}
-            lineWidth={selected ? 2.05 : hovered ? 1.45 : 0.82}
-            opacity={selected ? 1 : hovered ? 0.94 : 0.68}
+            color={selected ? "#ffd76a" : hovered ? "#ffe39a" : "#c7d0ce"}
+            depthTest={false}
+            lineWidth={selected ? 2.05 : hovered ? 1.35 : 0.58}
+            opacity={selected ? 1 : hovered ? 0.98 : 0.84}
             points={points}
-            renderOrder={selected ? 21 : 0}
+            renderOrder={selected ? 21 : hovered ? 13 : 9}
             transparent
           />
         </group>
@@ -401,7 +401,7 @@ export function BoliviaDepartmentMap({
           lowPower={lowPower}
           onHover={onHover}
           onSelect={onSelect}
-          selected={feature.properties.name === selected}
+          selected={focused !== null && feature.properties.name === selected}
         />
       ))}
     </group>
