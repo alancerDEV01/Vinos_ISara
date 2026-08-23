@@ -80,8 +80,21 @@ export function evaluatePairing(wine: Wine, dish: Dish): PairingResult {
     wine, dish, affinity, contrast, culture, global,
     verdict: global >= 85 ? "Maridaje altamente favorable" : global >= 70 ? "Maridaje favorable" : "Maridaje para explorar",
     reasons, cautions,
-    biochemical: acidity > .65 ? "Los ácidos orgánicos aportan frescura; los taninos y polisacáridos modulan estructura y textura." : "Ésteres y compuestos varietales construyen el puente aromático; la fermentación define parte de su expresión.",
+    biochemical: biochemicalExplanation(wine, acidity, tannins),
   };
+}
+
+function biochemicalExplanation(wine: Wine, acidity: number, tannins: number) {
+  const descriptors = [...wine.nose, ...wine.palate, ...wine.character].join(" ").toLocaleLowerCase("es");
+  const notes: string[] = [];
+  if (/fruta|cereza|ciruela|mora|arándano|frambuesa|fresa|piña|durazno|manzana|maracuyá/.test(descriptors)) notes.push("Los ésteres fermentativos y compuestos varietales expresan las notas frutales");
+  if (/flor|rosa|jazmín|lavanda/.test(descriptors)) notes.push("terpenos como linalool y geraniol sostienen el perfil floral");
+  if (/pimienta|clavo|canela|especia/.test(descriptors)) notes.push("rotundona, eugenol y otros compuestos varietales o de crianza explican el carácter especiado");
+  if (/vainilla|cacao|chocolate|café|tabaco|humo|roble|madera/.test(descriptors)) notes.push("vainillina y compuestos del tostado aportan las notas de madera, cacao y humo");
+  if (/cremos|untuoso|sedoso|aterciopelado/.test(descriptors)) notes.push("glicerol, polisacáridos y manoproteínas contribuyen a la textura suave y envolvente");
+  if (acidity > .65) notes.push("los ácidos orgánicos conservan vivacidad y frescura");
+  if (tannins > .6) notes.push("los taninos de piel, semillas y crianza aportan estructura y persistencia");
+  return `${notes.slice(0, 3).join("; ") || "La uva y la fermentación construyen su expresión aromática y táctil"}.`;
 }
 
 export const rankDishesForWine = (wine: Wine, dishes: Dish[]) => dishes.map((dish) => evaluatePairing(wine, dish)).sort((a, b) => b.global - a.global);
