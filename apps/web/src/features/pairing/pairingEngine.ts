@@ -42,13 +42,33 @@ export function evaluatePairing(wine: Wine, dish: Dish): PairingResult {
   const sweetHeat = spice > .25 ? Math.min(sweetness + .12, spice) : .45;
   const tanninProtein = has(dish.ingredients, ["Carne", "Cerdo", "Charque"]) ? tannins : .38;
   const bubblesFry = wine.style === "Espumante" && has(dish.techniques, ["Fritura"]) ? .92 : .42;
+  const protein = has(dish.ingredients, ["Carne roja", "Charque", "Carne de llama", "Cerdo"]);
+  const redMeat = has(dish.ingredients, ["Carne roja", "Charque", "Carne de llama"]);
+  const fish = has(dish.ingredients, ["Pescado"]);
+  const creamy = has(dish.textures, ["Cremosa", "Suave"]);
+  const fried = has(dish.techniques, ["Fritura"]);
+  const vegetal = has(dish.aromas, ["Vegetal", "Herbal"]);
+  const aromaticWine = has([...wine.nose, ...wine.character], ["floral", "aromático", "fragante", "cítrico", "tropical"]);
+  const powerfulRed = wine.style === "Tinto" && (tannins > .65 || has(wine.character, ["Potente", "Corpulento", "Estructurado", "Con cuerpo"]));
+  let culinary = .48;
+  if (wine.style === "Espumante") culinary = fried ? .98 : fish ? .88 : creamy ? .78 : .58;
+  else if (wine.style === "Blanco") culinary = fish ? .98 : creamy ? .86 : vegetal ? .82 : spice > .65 && sweetness < .4 ? .38 : .56;
+  else if (wine.style === "Rosado") culinary = has(dish.ingredients, ["Cerdo"]) ? .88 : fried ? .82 : spice > .5 ? .76 : .62;
+  else if (wine.style === "Naranjo") culinary = creamy ? .87 : spice > .45 ? .82 : vegetal ? .78 : .64;
+  else if (powerfulRed) culinary = redMeat ? .98 : protein ? .87 : creamy ? .48 : .38;
+  else culinary = has(dish.ingredients, ["Cerdo"]) ? .86 : redMeat ? .8 : creamy ? .68 : .52;
+  if (aromaticWine && (vegetal || creamy)) culinary = Math.min(1, culinary + .1);
+  if (sweetness > .55 && spice > .5) culinary = Math.min(1, culinary + .2);
+  const signature = [...`${wine.id}:${dish.id}`].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+  const individualVariation = ((signature * 17) % 9 - 4) / 100;
+  culinary = Math.max(.2, Math.min(1, culinary + individualVariation));
   const contrast = Math.round((.38 * acidBalance + .19 * sweetHeat + .24 * tanninProtein + .19 * bubblesFry) * 100);
   const culture = sameRegion ? (wine.valley.includes("Cinti") || wine.valley.includes("Tarija") ? 96 : 88) : 30;
-  const global = Math.round(.42 * affinity + .38 * contrast + .2 * culture);
+  const global = Math.round(.29 * affinity + .36 * contrast + .09 * culture + .26 * culinary * 100);
   const reasons = [
-    `La intensidad ${dish.intensity.toLocaleLowerCase("es")} del plato encuentra un vino de cuerpo ${wineBody > .7 ? "amplio" : wineBody > .45 ? "medio" : "ligero"}.`,
+    `La intensidad ${dish.intensity === "Alto" ? "alta" : dish.intensity.toLocaleLowerCase("es")} del plato encuentra un vino de cuerpo ${wineBody > .7 ? "amplio" : wineBody > .45 ? "medio" : "ligero"}.`,
     acidity > .65 && fat > .5 ? "La acidez y frescura ayudan a limpiar la percepción grasa del plato." : "El equilibrio del vino acompaña el peso del plato sin dominarlo.",
-    tannins > .6 && tanninProtein > .6 ? "Los taninos interactúan favorablemente con proteínas y grasa de la preparación." : aromaticMatch ? "Las familias especiadas y tostadas crean afinidad aromática." : "La fruta y los aromas del vino aportan un contrapunto limpio.",
+    powerfulRed && redMeat ? "La estructura tánica encuentra afinidad con la proteína y la intensidad cárnica." : wine.style === "Espumante" && fried ? "La burbuja y la acidez refrescan el paladar después de la fritura." : fish && wine.style === "Blanco" ? "La frescura y el perfil aromático respetan la delicadeza del pescado." : aromaticMatch ? "Las familias especiadas y tostadas crean afinidad aromática." : "La fruta y los aromas del vino aportan un contrapunto limpio.",
     sameRegion ? `El vínculo ${wine.department}–${dish.department} aporta coherencia territorial y patrimonial.` : "El maridaje se sostiene sensorialmente, aunque no comparte territorio.",
   ];
   const cautions = [
