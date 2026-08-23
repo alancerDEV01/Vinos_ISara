@@ -13,6 +13,6 @@ export function ExperienceLaunchButton() {
   };
   return <>
     <button className="primaryAction launchAction" onClick={launch} type="button">Comenzar la experiencia <span>→</span></button>
-    {launching ? <div className="launchTransition" role="status" aria-live="polite"><div className="launchRing ringOne"/><div className="launchRing ringTwo"/><div className="launchWine"/><div className="launchMessage"><small>Enología · territorio · cultura</small><strong>Entrando a Bolivia</strong><span>Preparando el mapa sensorial…</span></div></div> : null}
+    {launching ? <div className="launchTransition" role="status" aria-live="polite"><div className="launchStars"/><div className="launchRing ringOne"/><div className="launchRing ringTwo"/><div className="launchRing ringThree"/><div className="launchWine"/><div className="launchCloud launchCloudLeft"/><div className="launchCloud launchCloudRight"/><div className="launchMessage"><small>Enología · territorio · cultura</small><strong>Entrando a Bolivia</strong><span>Preparando el mapa sensorial…</span><i/></div></div> : null}
   </>;
 }
