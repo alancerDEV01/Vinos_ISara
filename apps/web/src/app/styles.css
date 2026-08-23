@@ -340,3 +340,19 @@ h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-heig
   .catalogIntroPanel .catalogHeader,.catalogIntroPanel .dishHeader { padding-bottom:.75rem; }
   .catalogIntroPanel .catalogToolbar,.catalogIntroPanel .dishToolbar { padding-top:.75rem; }
 }
+
+/* El panel de entrada sigue el ancho de la ficha y presenta el territorio antes de la imagen. */
+@media (min-width:901px) {
+  .catalogIntroPanel { max-width:1080px; }
+  .catalogIntroPanel .regionArrival { display:grid; grid-template-columns:1fr; gap:.85rem; width:100%; max-width:none; padding:1rem; }
+  .catalogIntroPanel .regionArrivalCopy { display:grid; grid-template-columns:max-content max-content minmax(240px,1fr); gap:.75rem 1.25rem; align-items:center; width:100%; padding:.35rem .25rem .65rem; text-align:left; }
+  .catalogIntroPanel .regionArrivalCopy small { white-space:nowrap; }
+  .catalogIntroPanel .regionArrivalCopy h2 { margin:0; font-size:clamp(2.25rem,3.4vw,3.5rem); line-height:1; overflow-wrap:normal; white-space:nowrap; }
+  .catalogIntroPanel .regionArrivalCopy p { max-width:520px; margin:0; padding-left:1.25rem; border-left:1px solid rgba(218,170,69,.28); }
+  .catalogIntroPanel .regionArrivalCarousel { width:100%; max-width:none; justify-self:stretch; }
+  .catalogIntroPanel .regionArrivalCarousel figure { aspect-ratio:16/6.6; }
+}
+@media (max-width:900px) {
+  .catalogIntroPanel { max-width:100%; }
+  .catalogIntroPanel .regionArrivalCopy { text-align:center; }
+}
