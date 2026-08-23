@@ -22,6 +22,7 @@ export default function DishesPage() {
     return (department === "Todos" || dish.department === department) && haystack.includes(query.toLowerCase().trim());
   }), [department, query]);
   const active = visible.find((dish) => dish.id === selected) ?? visible[0] ?? dishes[0];
+  const alternatives = visible.filter((dish) => dish.id !== active.id);
   const pairings = useMemo(() => rankWinesForDish(active, wines).slice(0, 3), [active]);
   const selectDish = (id: string) => {
     setSelected(id);
@@ -42,13 +43,12 @@ export default function DishesPage() {
         </section>
       </section>
       <div className="dishLayout">
-        <section className="dishGrid" aria-label={`${visible.length} platos encontrados`}>
-          {visible.map((dish) => <button className={`dishCard${active.id === dish.id ? " active" : ""}`} key={dish.id} onClick={() => selectDish(dish.id)} type="button">
+        {alternatives.length ? <section className="dishGrid" aria-label={`${alternatives.length} platos alternativos`}>
+          {alternatives.map((dish) => <button className="dishCard" key={dish.id} onClick={() => selectDish(dish.id)} type="button">
             {dish.image ? <img alt={dish.imageAlt ?? ""} src={dish.image} /> : <GeneratedDishImage cell={generatedDishCells[dish.id] ?? 0} />}
             <span className="dishCardOverlay"><small>{dish.department}</small><strong>{dish.name}</strong><span>{dish.region}</span></span>
           </button>)}
-          {!visible.length ? <p className="emptyCatalog">No encontramos platos con esos filtros.</p> : null}
-        </section>
+        </section> : null}
         <aside className="dishProfile" key={active.id} ref={profileRef}>
           <div className="dishProfileBody">
             <div className="profileLead dishProfileLead">

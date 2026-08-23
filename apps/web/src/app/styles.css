@@ -378,3 +378,10 @@ h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-heig
 .journeyEmblem svg { width:28px; height:28px; }
 .scene.journey-active .mapLabel,.scene.journey-active .mapStatus,.scene.journey-active .mapOverlayPanel { visibility:hidden!important; opacity:0!important; }
 .scene.journey-active .territoryJourney { z-index:500; }
+
+/* En móvil, la paginación vive debajo de la imagen y nunca tapa su texto. */
+@media (max-width:700px) {
+  .catalogIntroPanel .regionArrivalCarousel { display:grid; }
+  .catalogIntroPanel .regionArrivalControls { position:static; right:auto; bottom:auto; justify-self:center; margin:.55rem auto 0; transform:none; }
+  .catalogIntroPanel .regionArrivalControls>div { background:rgba(7,12,11,.78); border-color:rgba(238,192,91,.34); }
+}
