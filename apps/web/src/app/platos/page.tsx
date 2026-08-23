@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { dishes, generatedDishCells } from "@/features/dish-catalog/dishData";
 import { wines } from "@/features/wine-catalog/wineData";
 import { rankWinesForDish } from "@/features/pairing/pairingEngine";
@@ -15,6 +15,7 @@ export default function DishesPage() {
   const [query, setQuery] = useState("");
   const [department, setDepartment] = useState("Todos");
   const [selected, setSelected] = useState(dishes[0].id);
+  const profileRef = useRef<HTMLElement>(null);
   useEffect(() => setDepartment(new URLSearchParams(window.location.search).get("departamento") ?? "Todos"), []);
   const visible = useMemo(() => dishes.filter((dish) => {
     const haystack = `${dish.name} ${dish.department} ${dish.region} ${dish.ingredients.join(" ")}`.toLowerCase();
@@ -22,6 +23,10 @@ export default function DishesPage() {
   }), [department, query]);
   const active = visible.find((dish) => dish.id === selected) ?? visible[0] ?? dishes[0];
   const pairings = useMemo(() => rankWinesForDish(active, wines).slice(0, 3), [active]);
+  const selectDish = (id: string) => {
+    setSelected(id);
+    requestAnimationFrame(() => profileRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
 
   return (
     <><CatalogTopbar context="Gastronomía boliviana"/><main className="dishPage">
@@ -36,13 +41,13 @@ export default function DishesPage() {
       </section>
       <div className="dishLayout">
         <section className="dishGrid" aria-label={`${visible.length} platos encontrados`}>
-          {visible.map((dish) => <button className={`dishCard${active.id === dish.id ? " active" : ""}`} key={dish.id} onClick={() => setSelected(dish.id)} type="button">
+          {visible.map((dish) => <button className={`dishCard${active.id === dish.id ? " active" : ""}`} key={dish.id} onClick={() => selectDish(dish.id)} type="button">
             {dish.image ? <img alt={dish.imageAlt ?? ""} src={dish.image} /> : <GeneratedDishImage cell={generatedDishCells[dish.id] ?? 0} />}
             <span className="dishCardOverlay"><small>{dish.department}</small><strong>{dish.name}</strong><span>{dish.region}</span></span>
           </button>)}
           {!visible.length ? <p className="emptyCatalog">No encontramos platos con esos filtros.</p> : null}
         </section>
-        <aside className="dishProfile" key={active.id}>
+        <aside className="dishProfile" key={active.id} ref={profileRef}>
           {active.image ? <img className="dishHero" alt={active.imageAlt ?? ""} src={active.image} /> : <GeneratedDishImage cell={generatedDishCells[active.id] ?? 0} hero />}
           <div className="dishProfileBody">
             <p className="eyebrow">Perfil organoléptico preliminar</p><h2>{active.name}</h2><p className="dishMeta">{active.region} · {active.department}</p><p>{active.description}</p>

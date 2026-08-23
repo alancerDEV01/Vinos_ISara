@@ -266,3 +266,37 @@ h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-heig
 @keyframes mobilePanelIn { from { opacity:0; transform:translateY(36px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
 @keyframes mobileMapStoryIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
 @media (max-width:800px) { .sidePanel.mapOverlayPanel { transform:none; } }
+
+/* Una sola narrativa responsive: la secuencia móvil también estructura escritorio. */
+@media (min-width:901px) {
+  .catalogLayout,.dishLayout { grid-template-columns:1fr; gap:1.5rem; }
+  .wineProfile,.dishProfile { position:relative; top:auto; grid-row:1; justify-self:center; width:min(100%,1080px); max-height:none; scroll-margin-top:82px; }
+  .wineGrid { grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); }
+  .dishGrid { grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); }
+  .wineArt.hero { height:330px; }
+  .dishHero,.dishHero.generatedDishImage { height:330px; min-height:330px; }
+  .profileFacts { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .wineTechnical>div { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .palateAxes>div { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .pairingRecommendations { grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; }
+  .pairingRecommendations>.eyebrow { grid-column:1/-1; }
+}
+@media (min-width:801px) {
+  .sidePanel.mapOverlayPanel { position:absolute; inset:0; z-index:18; width:100%; max-height:none; margin:0; padding:1rem clamp(1.25rem,5vw,5rem) 3rem; overflow-x:hidden; overflow-y:auto; border:0; border-radius:0; background:linear-gradient(180deg,rgba(4,12,16,.03) 0,rgba(4,12,16,.1) 38%,rgba(5,12,13,.82) 72%,#07100f 100%); box-shadow:none; backdrop-filter:none; transform:none; animation:mobileMapStoryIn .45s cubic-bezier(.16,.84,.28,1); scrollbar-width:thin; }
+  .sidePanel.mapOverlayPanel::before { display:none; }
+  .scene:has(.mapOverlayPanel) canvas { filter:saturate(1.2) contrast(1.08) brightness(1.08); transform:translate3d(0,var(--map-scroll-y,0px),0); will-change:transform; }
+  .scene:has(.mapOverlayPanel) .mapLabel { opacity:0!important; pointer-events:none; }
+  .scene:has(.mapOverlayPanel) .mapStatus { opacity:0; }
+  .scene:has(.mapOverlayPanel) .mapReset { right:1rem; }
+  .mapOverlayPanel .overlayClose { position:sticky; top:0; z-index:8; display:flex; width:max-content; margin:0 0 0 auto; }
+  .mapOverlayPanel .territoryHeader { display:flex; min-height:42vh; max-width:900px; flex-direction:column; align-items:center; justify-content:flex-end; margin:0 auto; padding:4rem 1rem 1.25rem; border:0; background:none; text-align:center; text-shadow:0 3px 18px rgba(0,0,0,.9); }
+  .mapOverlayPanel .territoryHeader::after { display:none; }
+  .mapOverlayPanel .territoryHeader h2 { font-size:clamp(4rem,8vw,7rem); }
+  .mapOverlayPanel .territoryDescription { max-width:680px; color:#f0e8dc; }
+  .mapOverlayPanel .territoryFacts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:min(100%,680px); }
+  .mapOverlayPanel .placeCarousel,.mapOverlayPanel .departmentActions,.mapOverlayPanel .pairingStudio,.mapOverlayPanel .scoreGrid,.mapOverlayPanel .demoNotice,.mapOverlayPanel .departmentListLabel,.mapOverlayPanel .departmentList { width:min(100%,900px); margin-right:auto; margin-left:auto; }
+  .mapOverlayPanel .placeSlide { min-height:430px; }
+  .mapOverlayPanel .placeCopy h3 { font-size:clamp(2.8rem,5vw,5rem); }
+  .mapOverlayPanel .departmentActions { margin-top:1.2rem; }
+  .mapOverlayPanel .pairingStudio { margin-top:1.2rem; }
+}

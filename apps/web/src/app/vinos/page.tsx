@@ -27,7 +27,7 @@ export default function WinesPage() {
   const technical = technicalProfile(active);
   const selectWine = (id: string) => {
     setSelected(id);
-    if (window.matchMedia("(max-width: 900px)").matches) requestAnimationFrame(() => profileRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    requestAnimationFrame(() => profileRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   return (
