@@ -5,6 +5,7 @@ import { AdaptiveDpr, CameraControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BoliviaDepartmentMap, getBoliviaMapCenter, getDepartmentCenter, getDepartmentSize, getDepartmentSpan } from "./BoliviaDepartmentMap";
 import { departmentContent } from "./departmentContent";
 import { departmentGalleries } from "./departmentGallery";
@@ -123,6 +124,7 @@ function MapCamera({ data, focused }: { data: DepartmentCollection | null; focus
 }
 
 export default function BoliviaExperience() {
+  const router = useRouter();
   const [lowPower] = useState(() => typeof window !== "undefined"
     && window.matchMedia("(max-width: 800px), (prefers-reduced-motion: reduce)").matches);
   const [map, setMap] = useState<DepartmentCollection | null>(null);
@@ -136,6 +138,7 @@ export default function BoliviaExperience() {
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [pairingMode, setPairingMode] = useState<"wine" | "dish">("wine");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [journey, setJourney] = useState<"vinos" | "platos" | null>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -239,6 +242,11 @@ export default function BoliviaExperience() {
     setFocused(name);
     setGalleryIndex(0);
   };
+  const enterDepartment = (destination: "vinos" | "platos") => {
+    if (journey) return;
+    setJourney(destination);
+    window.setTimeout(() => router.push(`/${destination}?departamento=${encodeURIComponent(selected)}&entrada=territorio`), 1450);
+  };
 
   useEffect(() => setGalleryIndex(0), [selected]);
 
@@ -298,6 +306,7 @@ export default function BoliviaExperience() {
         aria-label="Mapa tridimensional interactivo de Bolivia"
       >
         {rainy ? <div className="rainLayer" aria-hidden="true" /> : null}
+        {journey ? <div className="territoryJourney" role="status" aria-live="polite"><div className="journeyCloud cloudOne"/><div className="journeyCloud cloudTwo"/><div className="journeyCloud cloudThree"/><div className="journeyPortal"><small>Entrando a {selected}</small><strong>{journey === "vinos" ? "Viñedos de altura" : "Sabores del territorio"}</strong><span>Analizando paisaje, cultura y perfil sensorial…</span></div></div> : null}
         <Canvas
           camera={{ position: [0, 13, 2.8], fov: 38 }}
           dpr={lowPower ? 1 : [1, 1.35]}
@@ -354,8 +363,8 @@ export default function BoliviaExperience() {
           <div className="carouselDots">{gallery.map((item, index) => <button aria-label={`Ver ${item.title}`} className={index === galleryIndex ? "active" : undefined} key={item.title} onClick={() => setGalleryIndex(index)} type="button" />)}</div>
         </section>
         <nav className="departmentActions" aria-label={`Explorar contenido de ${selected}`}>
-          <Link href={`/vinos?departamento=${encodeURIComponent(selected)}`}><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4.1 4.1 0 0 1-8 0L7 3Z"/><path d="M12 13.3V21M8.7 21h6.6"/></svg></span><strong>Vinos</strong><small>Descubrir etiquetas</small></Link>
-          <Link href={`/platos?departamento=${encodeURIComponent(selected)}`}><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="3.4"/><path d="M3.5 4v7M5.5 4v7M4.5 11v9M20 4v16M20 4c-2 1.7-2.1 5.7 0 7"/></svg></span><strong>Platos</strong><small>Ver gastronomía</small></Link>
+          <button onClick={() => enterDepartment("vinos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4.1 4.1 0 0 1-8 0L7 3Z"/><path d="M12 13.3V21M8.7 21h6.6"/></svg></span><strong>Vinos</strong><small>Descubrir etiquetas</small></button>
+          <button onClick={() => enterDepartment("platos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="3.4"/><path d="M3.5 4v7M5.5 4v7M4.5 11v9M20 4v16M20 4c-2 1.7-2.1 5.7 0 7"/></svg></span><strong>Platos</strong><small>Ver gastronomía</small></button>
         </nav>
         <section className="pairingStudio" key={`${selected}-pairing`}>
           <div className="pairingStudioHead"><span>✦ IA sensorial</span><small>Vista previa explicable</small></div>

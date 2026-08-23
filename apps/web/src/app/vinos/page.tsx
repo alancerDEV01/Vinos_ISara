@@ -1,27 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { wines, type Wine } from "@/features/wine-catalog/wineData";
+import { dishes } from "@/features/dish-catalog/dishData";
+import { rankDishesForWine } from "@/features/pairing/pairingEngine";
+import { PairingResultCard } from "@/features/pairing/PairingResultCard";
+import { RegionArrival } from "@/features/bolivia-map/RegionArrival";
 
 const styles: Array<Wine["style"] | "Todos"> = ["Todos", "Blanco", "Rosado", "Tinto", "Naranjo", "Espumante"];
 
 export default function WinesPage() {
   const [query, setQuery] = useState("");
   const [style, setStyle] = useState<(typeof styles)[number]>("Todos");
+  const [department, setDepartment] = useState("");
   const [selected, setSelected] = useState(wines[0].id);
+  useEffect(() => setDepartment(new URLSearchParams(window.location.search).get("departamento") ?? ""), []);
   const visible = useMemo(() => wines.filter((wine) => {
     const haystack = `${wine.name} ${wine.winery} ${wine.valley} ${wine.grapes.join(" ")}`.toLowerCase();
-    return (style === "Todos" || wine.style === style) && haystack.includes(query.toLowerCase().trim());
-  }), [query, style]);
+    return (!department || wine.department === department) && (style === "Todos" || wine.style === style) && haystack.includes(query.toLowerCase().trim());
+  }), [department, query, style]);
   const active = visible.find((wine) => wine.id === selected) ?? visible[0] ?? wines[0];
+  const pairings = useMemo(() => rankDishesForWine(active, dishes).slice(0, 3), [active]);
 
   return (
     <main className="catalogPage">
       <header className="catalogHeader">
-        <div><p className="eyebrow">Base sensorial boliviana</p><h1>Vinos de altura</h1><p>Primer catálogo documental de Cinti y del Valle Central de Tarija.</p></div>
+        <div><p className="eyebrow">Base sensorial boliviana</p><h1>{department ? `Vinos de ${department}` : "Vinos de altura"}</h1><p>Catálogo documental de Cinti y del Valle Central de Tarija.</p></div>
         <Link href="/explorar">Volver al mapa 3D</Link>
       </header>
+      <RegionArrival department={department} mode="vinos" />
       <section className="catalogToolbar" aria-label="Filtros del catálogo">
         <label><span>Buscar vino, bodega o cepa</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ej. Tannat, Aranjuez, Vischoqueña…" /></label>
         <div className="wineFilters">{styles.map((item) => <button className={style === item ? "active" : undefined} key={item} onClick={() => setStyle(item)} type="button">{item}</button>)}</div>
@@ -30,14 +38,14 @@ export default function WinesPage() {
         <section className="wineGrid" aria-label={`${visible.length} vinos encontrados`}>
           {visible.map((wine) => (
             <button className={`wineCard${active.id === wine.id ? " active" : ""}`} key={wine.id} onClick={() => setSelected(wine.id)} type="button">
-              <WineArt styleName={wine.style} />
+              <WineArt styleName={wine.style} /><GrapeIcon />
               <span className="wineCardCopy"><small>{wine.valley}</small><strong>{wine.name}</strong><span>{wine.winery}</span><em>{wine.grapes.join(" · ")}</em></span>
             </button>
           ))}
           {!visible.length ? <p className="emptyCatalog">No encontramos vinos con esos filtros.</p> : null}
         </section>
         <aside className="wineProfile" key={active.id}>
-          <WineArt hero styleName={active.style} />
+          <WineArt hero styleName={active.style} /><div className="wineGrapeHero"><GrapeIcon /><span>{active.grapes.join(" · ")}</span></div>
           <p className="eyebrow">Perfil sensorial de referencia</p>
           <h2>{active.name}</h2>
           <p className="wineMeta">{active.winery} · {active.valley} · {active.department}</p>
@@ -63,12 +71,14 @@ export default function WinesPage() {
           <SensoryGroup title="Carácter" values={active.character} />
           <PalateAxes wine={active} />
           <p className="sourceNotice">Registro en borrador extraído del documento fuente. El perfil puede cambiar según añada, parcela, crianza y vinificación; los campos no documentados no se completan por inferencia.</p>
-          <button aria-disabled="true" className="pairingAction" disabled type="button">Motor de platos: siguiente etapa <span>→</span></button>
+          <section className="pairingRecommendations"><p className="eyebrow">Tengo este vino · platos recomendados</p>{pairings.map((result) => <PairingResultCard key={result.dish.id} perspective="wine" result={result} />)}</section>
         </aside>
       </div>
     </main>
   );
 }
+
+function GrapeIcon() { return <span className="grapeIcon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M25 12c5-7 11-7 15-5-2 6-8 9-15 7M24 12c-3-5-7-7-11-7"/><circle cx="24" cy="18" r="5"/><circle cx="16" cy="23" r="5"/><circle cx="32" cy="23" r="5"/><circle cx="21" cy="31" r="5"/><circle cx="29" cy="31" r="5"/><circle cx="25" cy="39" r="4"/></svg></span>; }
 
 function TechnicalFact({ label, value }: { label: string; value?: string }) {
   return <span className={value ? undefined : "pending"}><small>{label}</small>{value ?? "No documentado"}</span>;
