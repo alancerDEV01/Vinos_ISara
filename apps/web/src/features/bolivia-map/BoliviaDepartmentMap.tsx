@@ -3,7 +3,7 @@
 import { Html, Line } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CanvasTexture, ExtrudeGeometry, LinearFilter, Shape, ShapeUtils, SRGBColorSpace, Vector2 } from "three";
+import { AlwaysStencilFunc, CanvasTexture, EqualStencilFunc, ExtrudeGeometry, KeepStencilOp, LinearFilter, ReplaceStencilOp, Shape, ShapeUtils, SRGBColorSpace, Vector2 } from "three";
 import type { Group, MeshBasicMaterial, PointLight } from "three";
 import type { DepartmentCollection, DepartmentFeature, LinearRing, PolygonCoordinates } from "./geojson";
 
@@ -28,7 +28,7 @@ type ElevationRaster = {
   normalTexture: CanvasTexture;
 };
 
-function useBoliviaElevation(): ElevationRaster | null {
+function useBoliviaElevation(lowPower: boolean): ElevationRaster | null {
   const [raster, setRaster] = useState<ElevationRaster | null>(null);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ function useBoliviaElevation(): ElevationRaster | null {
       loadImage("/data/bolivia-elevation.png"),
       loadImage("/data/bolivia-satellite.jpg"),
       loadImage("/data/bolivia-terrain-mask.png"),
-      loadImage("/data/bolivia-terrain-normal.jpg"),
+      loadImage(lowPower ? "/data/bolivia-terrain-mask.png" : "/data/bolivia-terrain-normal.jpg"),
     ]).then(([elevationImage, colorImage, maskImage, normalImage]) => {
       if (!active) return;
       const elevationCanvas = canvasFrom(elevationImage);
@@ -65,10 +65,10 @@ function useBoliviaElevation(): ElevationRaster | null {
       texture.minFilter = LinearFilter;
       colorTexture.minFilter = LinearFilter;
       colorTexture.colorSpace = SRGBColorSpace;
-      colorTexture.anisotropy = 16;
+      colorTexture.anisotropy = lowPower ? 2 : 8;
       maskTexture.minFilter = LinearFilter;
       normalTexture.minFilter = LinearFilter;
-      normalTexture.anisotropy = 16;
+      normalTexture.anisotropy = lowPower ? 2 : 8;
       setRaster({
         data: elevationContext.getImageData(0, 0, elevationCanvas.width, elevationCanvas.height).data,
         width: elevationCanvas.width,
@@ -80,7 +80,7 @@ function useBoliviaElevation(): ElevationRaster | null {
       });
     }).catch(() => console.error("No se pudieron cargar las texturas del terreno de Bolivia"));
     return () => { active = false; };
-  }, []);
+  }, [lowPower]);
 
   return raster;
 }
@@ -93,10 +93,10 @@ function sampleElevation(raster: ElevationRaster, longitude: number, latitude: n
   return raster.data[(y * raster.width + x) * 4] / 255;
 }
 
-function Terrain({ elevation }: { elevation: ElevationRaster }) {
+function Terrain({ elevation, focused, lowPower }: { elevation: ElevationRaster; focused: boolean; lowPower: boolean }) {
   return (
-    <mesh castShadow receiveShadow position={[0, 0, TERRAIN_CENTER_Z]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[TERRAIN_WIDTH, TERRAIN_HEIGHT, 384, 415]} />
+    <mesh castShadow={!lowPower} receiveShadow={!lowPower} position={[0, 0, TERRAIN_CENTER_Z]} renderOrder={2} rotation={[-Math.PI / 2, 0, 0]}>
+      <planeGeometry args={[TERRAIN_WIDTH, TERRAIN_HEIGHT, lowPower ? 128 : 256, lowPower ? 140 : 278]} />
       <meshStandardMaterial
         alphaMap={elevation.maskTexture}
         alphaTest={0.35}
@@ -104,10 +104,16 @@ function Terrain({ elevation }: { elevation: ElevationRaster }) {
         displacementScale={0.44}
         map={elevation.colorTexture}
         metalness={0}
-        normalMap={elevation.normalTexture}
-        normalScale={new Vector2(0.92, 0.92)}
-        roughness={0.88}
+        normalMap={lowPower ? undefined : elevation.normalTexture}
+        normalScale={lowPower ? undefined : new Vector2(0.92, 0.92)}
+        roughness={focused ? 0.66 : 0.84}
         transparent
+        stencilFail={KeepStencilOp}
+        stencilFunc={focused ? EqualStencilFunc : AlwaysStencilFunc}
+        stencilRef={1}
+        stencilWrite={focused}
+        stencilZFail={KeepStencilOp}
+        stencilZPass={KeepStencilOp}
       />
     </mesh>
   );
@@ -210,15 +216,40 @@ function getDepartmentAnchor(feature: DepartmentFeature): [number, number] {
 }
 
 export function getDepartmentCenter(feature: DepartmentFeature): [number, number] {
-  const projected = project(getDepartmentAnchor(feature));
-  return [projected.x, -projected.y];
+  const points = featurePolygons(feature).flat(2).map(project);
+  const xs = points.map(({ x }) => x);
+  const ys = points.map(({ y }) => y);
+  return [
+    (Math.min(...xs) + Math.max(...xs)) / 2,
+    -((Math.min(...ys) + Math.max(...ys)) / 2),
+  ];
 }
 
 export function getDepartmentSpan(feature: DepartmentFeature): number {
+  const { depth, width } = getDepartmentSize(feature);
+  return Math.max(width, depth);
+}
+
+export function getDepartmentSize(feature: DepartmentFeature): { width: number; depth: number } {
   const positions = featurePolygons(feature).flat(2).map(project);
   const xs = positions.map(({ x }) => x);
   const ys = positions.map(({ y }) => y);
-  return Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+  return {
+    width: Math.max(...xs) - Math.min(...xs),
+    depth: Math.max(...ys) - Math.min(...ys),
+  };
+}
+
+export function getBoliviaMapCenter(data: DepartmentCollection): [number, number] {
+  const points = data.features.flatMap((feature) => featurePolygons(feature))
+    .flatMap((polygon) => polygon[0])
+    .map(project);
+  const xs = points.map(({ x }) => x);
+  const ys = points.map(({ y }) => y);
+  return [
+    (Math.min(...xs) + Math.max(...xs)) / 2,
+    -((Math.min(...ys) + Math.max(...ys)) / 2),
+  ];
 }
 
 function Department({
@@ -229,6 +260,7 @@ function Department({
   onSelect,
   onHover,
   elevation,
+  lowPower,
 }: {
   feature: DepartmentFeature;
   selected: boolean;
@@ -237,6 +269,7 @@ function Department({
   onSelect: (name: string) => void;
   onHover: (name: string | null) => void;
   elevation: ElevationRaster;
+  lowPower: boolean;
 }) {
   const geometries = useMemo(
     () => featurePolygons(feature)
@@ -267,34 +300,29 @@ function Department({
 
   return (
     <group>
-      {outlines.map((points, index) => (
+      {selected && focused ? null : outlines.map((points, index) => (
         <group key={`outline-${index}`}>
-          {selected ? (
-            <Line
-              color="#ffbd3d"
-              lineWidth={9}
-              opacity={0.2}
-              points={points}
-              transparent
-            />
-          ) : null}
           <Line
-            color="#211a12"
-            lineWidth={selected ? 4.8 : hovered ? 3.2 : 2.15}
-            opacity={selected ? 0.72 : 0.46}
+            color={selected ? "#3f2d12" : "#211a12"}
+            depthTest={!selected}
+            lineWidth={selected ? 4.1 : hovered ? 3.2 : 2.15}
+            opacity={selected ? 0.96 : 0.46}
             points={points}
+            renderOrder={selected ? 20 : 0}
             transparent
           />
           <Line
-            color={selected ? "#ffd86b" : hovered ? "#fff0c4" : "#e7d8b6"}
-            lineWidth={selected ? 2.45 : hovered ? 1.45 : 0.82}
+            color={selected ? "#ffd76a" : hovered ? "#fff0c4" : "#e7d8b6"}
+            depthTest={!selected}
+            lineWidth={selected ? 2.05 : hovered ? 1.45 : 0.82}
             opacity={selected ? 1 : hovered ? 0.94 : 0.68}
             points={points}
+            renderOrder={selected ? 21 : 0}
             transparent
           />
         </group>
       ))}
-      {selected ? (
+      {selected && !lowPower ? (
         <>
           <SelectionPulse delay={0} position={labelPosition} />
           <SelectionPulse delay={0.5} position={labelPosition} />
@@ -305,9 +333,20 @@ function Department({
       </Html>
       <group position-y={0.62}>
       {geometries.map((geometry, index) => (
+        <group key={index}>
+        {selected && focused ? <mesh geometry={geometry} renderOrder={1}>
+          <meshBasicMaterial
+            colorWrite={false}
+            depthTest={false}
+            depthWrite={false}
+            stencilFunc={AlwaysStencilFunc}
+            stencilRef={1}
+            stencilWrite
+            stencilZPass={ReplaceStencilOp}
+          />
+        </mesh> : null}
         <mesh
           geometry={geometry}
-          key={index}
           onClick={(event) => { event.stopPropagation(); onSelect(feature.properties.name); }}
           onPointerEnter={(event) => { event.stopPropagation(); onHover(feature.properties.name); document.body.style.cursor = "pointer"; }}
           onPointerLeave={() => { onHover(null); document.body.style.cursor = "default"; }}
@@ -319,6 +358,7 @@ function Department({
             transparent
           />
         </mesh>
+        </group>
       ))}
       </group>
     </group>
@@ -332,6 +372,7 @@ export function BoliviaDepartmentMap({
   focused,
   onSelect,
   onHover,
+  lowPower = false,
 }: {
   data: DepartmentCollection;
   selected: string;
@@ -339,23 +380,25 @@ export function BoliviaDepartmentMap({
   focused: string | null;
   onSelect: (name: string) => void;
   onHover: (name: string | null) => void;
+  lowPower?: boolean;
 }) {
-  const elevation = useBoliviaElevation();
+  const elevation = useBoliviaElevation(lowPower);
   if (!elevation) return null;
   return (
     <group position={[0, -0.2, 0]}>
-      <mesh position={[0, -0.035, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
+      {!lowPower ? <mesh position={[0, -0.035, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[9.2, 10]} />
         <shadowMaterial opacity={0.2} transparent />
-      </mesh>
-      <Terrain elevation={elevation} />
-      {data.features.map((feature) => (
+      </mesh> : null}
+      <Terrain elevation={elevation} focused={focused !== null} lowPower={lowPower} />
+      {data.features.filter((feature) => !focused || feature.properties.name === selected).map((feature) => (
         <Department
           feature={feature}
           elevation={elevation}
           hovered={feature.properties.name === hovered}
           focused={focused !== null}
           key={feature.properties.code}
+          lowPower={lowPower}
           onHover={onHover}
           onSelect={onSelect}
           selected={feature.properties.name === selected}
