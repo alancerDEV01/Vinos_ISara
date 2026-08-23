@@ -1,4 +1,4 @@
-from modules.pairing.domain.models import (
+from backend.modules.pairing.domain.models import (
     Contribution,
     DishProfile,
     PairingResult,

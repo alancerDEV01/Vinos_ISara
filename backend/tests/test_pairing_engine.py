@@ -1,5 +1,5 @@
-from modules.pairing.domain.engine import PairingEngine
-from modules.pairing.domain.models import DishProfile, WineProfile
+from backend.modules.pairing.domain.engine import PairingEngine
+from backend.modules.pairing.domain.models import DishProfile, WineProfile
 
 
 def test_exposes_independent_scores_and_contributions() -> None:

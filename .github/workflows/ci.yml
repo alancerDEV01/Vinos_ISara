@@ -16,7 +16,7 @@ jobs:
       - name: Test pure pairing domain
         run: |
           python -m pip install pytest
-          PYTHONPATH=backend pytest backend/tests
+          python -m pytest backend/tests
 
   web:
     runs-on: ubuntu-latest
@@ -29,5 +29,6 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sara/web typecheck
+      - run: pnpm --filter @sara/web build
