@@ -49,7 +49,6 @@ export default function WinesPage() {
               <span className="wineCardCopy"><small>{wine.valley}</small><strong>{wine.name}</strong><span>{wine.winery}</span><em>{wine.grapes.join(" · ")}</em></span>
             </button>
           ))}
-          {!visible.length ? <p className="emptyCatalog">No encontramos vinos con esos filtros.</p> : null}
         </section>
         <aside className="wineProfile" key={active.id} ref={profileRef}>
           <WineArt hero styleName={active.style} /><div className="wineGrapeHero"><GrapeIcon /><span>{active.grapes.join(" · ")}</span></div>
