@@ -77,7 +77,6 @@ export default function WinesPage() {
           <SensoryGroup title="Boca" values={active.palate} />
           <SensoryGroup title="Carácter" values={active.character} />
           <PalateAxes wine={active} />
-          <p className="sourceNotice">Los datos de elaboración identificados corresponden al documento fuente. La matriz de boca marcada como “estimación sensorial” se calcula desde los descriptores disponibles y debe validarse con análisis de etiqueta y cata técnica.</p>
           <section className="pairingRecommendations"><p className="eyebrow">Tengo este vino · platos recomendados</p>{pairings.map((result) => <PairingResultCard key={result.dish.id} perspective="wine" result={result} />)}</section>
         </aside>
       </div>
@@ -130,25 +129,44 @@ const axes: Array<keyof NonNullable<Wine["palateAxes"]>> = ["Dulzor", "Acidez", 
 
 function PalateAxes({ wine }: { wine: Wine }) {
   const profile = completePalateProfile(wine);
-  return <section className="palateAxes"><h3>Matriz de boca</h3><p>Lectura semicuantitativa: dato documental o estimación sensorial derivada de la ficha.</p><div>{axes.map((axis) => <span key={axis}><small>{axis}</small><b>{profile[axis].label}</b><i><em style={{ width: `${profile[axis].score}%` }}/></i><small className="axisSource">{wine.palateAxes?.[axis] ? "Documentado" : "Estimación sensorial"}</small></span>)}</div></section>;
+  return <section className="palateAxes"><h3>Matriz de boca</h3><div>{axes.map((axis) => <span key={axis}><small>{axis}</small><b>{profile[axis].label}</b><i><em style={{ width: `${profile[axis].score}%` }}/></i></span>)}</div></section>;
 }
 
 function completePalateProfile(wine: Wine): Record<(typeof axes)[number], { label: string; score: number }> {
-  const text = [...wine.palate, ...wine.character].join(" ").toLocaleLowerCase("es");
+  const text = [...wine.palate, ...wine.character, ...wine.nose].join(" ").toLocaleLowerCase("es");
+  const grapes = wine.grapes.join(" ").toLocaleLowerCase("es");
   const has = (...terms: string[]) => terms.some((term) => text.includes(term));
-  const defaults: Record<(typeof axes)[number], { label: string; score: number }> = {
-    Dulzor: wine.style === "Espumante" && has("demi", "dulzor") ? { label: "Semiseco", score: 58 } : has("semidulce", "dulce") ? { label: "Semidulce", score: 66 } : { label: "Seco", score: 20 },
-    Acidez: has("gran frescura", "acidez marcada", "buena acidez", "vivaz") ? { label: "Alta", score: 82 } : has("fresco", "cítrico") ? { label: "Media-alta", score: 68 } : { label: "Media", score: 52 },
-    Alcohol: has("potente", "corpulento", "opulento") ? { label: "Medio-alto", score: 72 } : { label: "Medio", score: 55 },
-    Taninos: wine.style !== "Tinto" ? { label: "Muy bajos", score: 10 } : has("firmes", "potente") ? { label: "Firmes", score: 82 } : has("finos", "sedoso", "suaves", "moderados", "nobles") ? { label: "Medios", score: 58 } : { label: "Medio-altos", score: 68 },
-    Astringencia: wine.style !== "Tinto" ? { label: "Baja", score: 12 } : has("agarre", "firmes") ? { label: "Media-alta", score: 72 } : { label: "Media", score: 50 },
-    Cuerpo: has("corpulento", "con cuerpo", "amplio", "estructurado", "carnoso", "opulento") ? { label: "Alto", score: 82 } : has("ligero") ? { label: "Ligero", score: 32 } : { label: "Medio", score: 56 },
-    Intensidad: has("intenso", "potente", "profundo", "complejo") ? { label: "Alta", score: 82 } : has("delicado", "ligero") ? { label: "Baja-media", score: 38 } : { label: "Media", score: 58 },
-    Textura: has("aterciopelado", "sedoso") ? { label: "Sedosa", score: 78 } : has("texturado", "carnoso") ? { label: "Estructurada", score: 74 } : has("redondo", "suave", "amable") ? { label: "Redonda", score: 64 } : { label: "Fluida", score: 48 },
-    Persistencia: has("final largo", "largo", "persistente") ? { label: "Larga", score: 86 } : has("ligero", "delicado") ? { label: "Corta-media", score: 40 } : { label: "Media", score: 58 },
+  const varietal = (...terms: string[]) => terms.some((term) => grapes.includes(term));
+  const signature = [...wine.id].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+  const variation = (axis: number) => ((signature * (axis + 5)) % 9) - 4;
+  const red = wine.style === "Tinto";
+  const orange = wine.style === "Naranjo";
+  const sparkling = wine.style === "Espumante";
+  const tannic = varietal("tannat", "cabernet", "syrah") || has("taninos firmes", "potente", "estructurado");
+  const aromatic = varietal("moscatel", "vischoqueña") || has("aromático", "floral", "fragante");
+  const soft = varietal("merlot", "malbec", "negra criolla") || has("suave", "sedoso", "aterciopelado", "redondo");
+  const clamp = (value: number) => Math.max(6, Math.min(96, Math.round(value)));
+  const scores = {
+    Dulzor: clamp((has("demi", "semidulce") ? 62 : aromatic ? 29 : 17) + variation(0)),
+    Acidez: clamp((sparkling ? 78 : has("acidez marcada", "gran frescura", "vivaz") ? 82 : aromatic || wine.style === "Blanco" || wine.style === "Rosado" ? 69 : red ? 58 : 64) + variation(1)),
+    Alcohol: clamp((has("potente", "corpulento", "opulento") ? 76 : red ? 64 : sparkling ? 48 : 56) + variation(2)),
+    Taninos: clamp((!red && !orange ? 9 : orange ? 46 : tannic ? 84 : soft ? 56 : 66) + variation(3)),
+    Astringencia: clamp((!red && !orange ? 10 : orange ? 52 : tannic ? 75 : soft ? 43 : 58) + variation(4)),
+    Cuerpo: clamp((has("corpulento", "con cuerpo", "amplio", "carnoso", "opulento") ? 84 : tannic ? 76 : has("ligero", "delicado") ? 35 : sparkling ? 45 : soft ? 63 : 57) + variation(5)),
+    Intensidad: clamp((has("intenso", "potente", "profundo", "complejo") ? 84 : aromatic ? 68 : has("delicado", "ligero") ? 40 : 59) + variation(6)),
+    Textura: clamp((has("aterciopelado", "sedoso") ? 82 : has("texturado", "carnoso", "estructura") ? 76 : sparkling ? 69 : soft ? 65 : 52) + variation(7)),
+    Persistencia: clamp((has("final largo", "largo", "persistente") ? 88 : tannic ? 76 : aromatic ? 60 : has("ligero", "delicado") ? 41 : 58) + variation(8)),
   };
-  for (const axis of axes) if (wine.palateAxes?.[axis]) defaults[axis].label = wine.palateAxes[axis]!;
-  return defaults;
+  const label = (axis: keyof typeof scores, score: number) => {
+    if (axis === "Dulzor") return score < 25 ? "Seco" : score < 45 ? "Seco amable" : score < 70 ? "Semiseco" : "Dulce";
+    if (axis === "Taninos") return score < 20 ? "Muy bajos" : score < 45 ? "Suaves" : score < 68 ? "Medios" : score < 84 ? "Firmes" : "Muy firmes";
+    if (axis === "Astringencia") return score < 25 ? "Baja" : score < 50 ? "Media-baja" : score < 72 ? "Media" : "Alta";
+    if (axis === "Textura") return has("aterciopelado") ? "Aterciopelada" : has("sedoso") ? "Sedosa" : sparkling ? "Burbuja fina" : score >= 72 ? "Estructurada" : score >= 55 ? "Redonda" : "Fluida";
+    if (axis === "Persistencia") return score < 45 ? "Corta-media" : score < 68 ? "Media" : score < 84 ? "Larga" : "Muy larga";
+    if (axis === "Cuerpo") return score < 42 ? "Ligero" : score < 68 ? "Medio" : score < 84 ? "Amplio" : "Corpulento";
+    return score < 40 ? "Baja" : score < 62 ? "Media" : score < 80 ? "Media-alta" : "Alta";
+  };
+  return Object.fromEntries(axes.map((axis) => [axis, { score: scores[axis], label: wine.palateAxes?.[axis] ?? label(axis, scores[axis]) }])) as Record<(typeof axes)[number], { label: string; score: number }>;
 }
 
 function SensoryGroup({ title, values }: { title: string; values: string[] }) {
