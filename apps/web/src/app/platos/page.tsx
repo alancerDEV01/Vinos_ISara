@@ -7,6 +7,7 @@ import { wines } from "@/features/wine-catalog/wineData";
 import { rankWinesForDish } from "@/features/pairing/pairingEngine";
 import { PairingResultCard } from "@/features/pairing/PairingResultCard";
 import { RegionArrival } from "@/features/bolivia-map/RegionArrival";
+import { CatalogTopbar } from "@/components/CatalogTopbar";
 
 const departments = ["Todos", "Chuquisaca", "Tarija", "Cochabamba", "La Paz", "Oruro", "Potosí", "Santa Cruz", "Beni", "Pando"];
 
@@ -23,7 +24,7 @@ export default function DishesPage() {
   const pairings = useMemo(() => rankWinesForDish(active, wines).slice(0, 3), [active]);
 
   return (
-    <main className="dishPage">
+    <><CatalogTopbar context="Gastronomía boliviana"/><main className="dishPage">
       <header className="dishHeader">
         <div><p className="eyebrow">Patrimonio gastronómico</p><h1>{department !== "Todos" ? `Sabores de ${department}` : "Sabores de Bolivia"}</h1><p>Preparaciones regionales caracterizadas para construir maridajes explicables.</p></div>
         <nav><Link href="/vinos">Explorar vinos</Link><Link href="/explorar">Mapa 3D</Link></nav>
@@ -52,7 +53,7 @@ export default function DishesPage() {
           </div>
         </aside>
       </div>
-    </main>
+    </main></>
   );
 }
 

@@ -7,6 +7,7 @@ import { dishes } from "@/features/dish-catalog/dishData";
 import { rankDishesForWine } from "@/features/pairing/pairingEngine";
 import { PairingResultCard } from "@/features/pairing/PairingResultCard";
 import { RegionArrival } from "@/features/bolivia-map/RegionArrival";
+import { CatalogTopbar } from "@/components/CatalogTopbar";
 
 const styles: Array<Wine["style"] | "Todos"> = ["Todos", "Blanco", "Rosado", "Tinto", "Naranjo", "Espumante"];
 
@@ -15,7 +16,6 @@ export default function WinesPage() {
   const [style, setStyle] = useState<(typeof styles)[number]>("Todos");
   const [department, setDepartment] = useState("");
   const [selected, setSelected] = useState(wines[0].id);
-  const [menuOpen, setMenuOpen] = useState(false);
   const profileRef = useRef<HTMLElement>(null);
   useEffect(() => setDepartment(new URLSearchParams(window.location.search).get("departamento") ?? ""), []);
   const visible = useMemo(() => wines.filter((wine) => {
@@ -31,12 +31,7 @@ export default function WinesPage() {
   };
 
   return (
-    <><header className="catalogTopbar">
-      <Link className="brand" href="/">Bolivia en la copa</Link>
-      <span className="catalogTopbarContext">Enología boliviana</span>
-      <button aria-expanded={menuOpen} aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"} className={`catalogMenuToggle${menuOpen ? " open" : ""}`} onClick={() => setMenuOpen((value) => !value)} type="button"><i/><i/><i/></button>
-      <nav className={menuOpen ? "open" : undefined}><Link href="/">Inicio</Link><Link href="/explorar">Mapa 3D</Link><Link href="/vinos">Vinos</Link><Link href="/platos">Gastronomía</Link></nav>
-    </header><main className="catalogPage">
+    <><CatalogTopbar context="Enología boliviana"/><main className="catalogPage">
       <header className="catalogHeader">
         <div><p className="eyebrow">Base sensorial boliviana</p><h1>{department ? `Vinos de ${department}` : "Vinos de altura"}</h1><p>Catálogo documental de Cinti y del Valle Central de Tarija.</p></div>
         <Link href="/explorar">Volver al mapa 3D</Link>
