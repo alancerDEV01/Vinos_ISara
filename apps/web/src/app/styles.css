@@ -385,3 +385,11 @@ h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-heig
   .catalogIntroPanel .regionArrivalControls { position:static; right:auto; bottom:auto; justify-self:center; margin:.55rem auto 0; transform:none; }
   .catalogIntroPanel .regionArrivalControls>div { background:rgba(7,12,11,.78); border-color:rgba(238,192,91,.34); }
 }
+
+.dishAlternativesHeader { grid-column:1/-1; padding:.4rem 0 .8rem; border-bottom:1px solid rgba(218,170,69,.24); text-align:left; }
+.dishAlternativesHeader h2 { margin:.15rem 0 .3rem; font-family:Georgia,serif; font-size:clamp(1.8rem,3vw,2.7rem); }
+.dishAlternativesHeader p:last-child { margin:0; color:var(--muted); font-size:.78rem; }
+@media (max-width:700px) {
+  .dishAlternativesHeader { padding:.2rem 0 .55rem; }
+  .dishAlternativesHeader h2 { font-size:1.75rem; }
+}

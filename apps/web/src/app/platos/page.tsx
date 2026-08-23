@@ -44,6 +44,7 @@ export default function DishesPage() {
       </section>
       <div className="dishLayout">
         {alternatives.length ? <section className="dishGrid" aria-label={`${alternatives.length} platos alternativos`}>
+          <header className="dishAlternativesHeader"><p className="eyebrow">Continúa explorando</p><h2>{department === "Todos" ? "Otros sabores de Bolivia" : `Otros platos de ${department}`}</h2><p>Preparaciones regionales relacionadas que también forman parte de este territorio.</p></header>
           {alternatives.map((dish) => <button className="dishCard" key={dish.id} onClick={() => selectDish(dish.id)} type="button">
             {dish.image ? <img alt={dish.imageAlt ?? ""} src={dish.image} /> : <GeneratedDishImage cell={generatedDishCells[dish.id] ?? 0} />}
             <span className="dishCardOverlay"><small>{dish.department}</small><strong>{dish.name}</strong><span>{dish.region}</span></span>
