@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { wines, type Wine } from "@/features/wine-catalog/wineData";
 import { dishes } from "@/features/dish-catalog/dishData";
 import { rankDishesForWine } from "@/features/pairing/pairingEngine";
@@ -15,6 +15,8 @@ export default function WinesPage() {
   const [style, setStyle] = useState<(typeof styles)[number]>("Todos");
   const [department, setDepartment] = useState("");
   const [selected, setSelected] = useState(wines[0].id);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const profileRef = useRef<HTMLElement>(null);
   useEffect(() => setDepartment(new URLSearchParams(window.location.search).get("departamento") ?? ""), []);
   const visible = useMemo(() => wines.filter((wine) => {
     const haystack = `${wine.name} ${wine.winery} ${wine.valley} ${wine.grapes.join(" ")}`.toLowerCase();
@@ -22,9 +24,19 @@ export default function WinesPage() {
   }), [department, query, style]);
   const active = visible.find((wine) => wine.id === selected) ?? visible[0] ?? wines[0];
   const pairings = useMemo(() => rankDishesForWine(active, dishes).slice(0, 3), [active]);
+  const technical = technicalProfile(active);
+  const selectWine = (id: string) => {
+    setSelected(id);
+    if (window.matchMedia("(max-width: 900px)").matches) requestAnimationFrame(() => profileRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
 
   return (
-    <main className="catalogPage">
+    <><header className="catalogTopbar">
+      <Link className="brand" href="/">Bolivia en la copa</Link>
+      <span className="catalogTopbarContext">Enología boliviana</span>
+      <button aria-expanded={menuOpen} aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"} className={`catalogMenuToggle${menuOpen ? " open" : ""}`} onClick={() => setMenuOpen((value) => !value)} type="button"><i/><i/><i/></button>
+      <nav className={menuOpen ? "open" : undefined}><Link href="/">Inicio</Link><Link href="/explorar">Mapa 3D</Link><Link href="/vinos">Vinos</Link><Link href="/platos">Gastronomía</Link></nav>
+    </header><main className="catalogPage">
       <header className="catalogHeader">
         <div><p className="eyebrow">Base sensorial boliviana</p><h1>{department ? `Vinos de ${department}` : "Vinos de altura"}</h1><p>Catálogo documental de Cinti y del Valle Central de Tarija.</p></div>
         <Link href="/explorar">Volver al mapa 3D</Link>
@@ -37,14 +49,14 @@ export default function WinesPage() {
       <div className="catalogLayout">
         <section className="wineGrid" aria-label={`${visible.length} vinos encontrados`}>
           {visible.map((wine) => (
-            <button className={`wineCard${active.id === wine.id ? " active" : ""}`} key={wine.id} onClick={() => setSelected(wine.id)} type="button">
+            <button className={`wineCard${active.id === wine.id ? " active" : ""}`} key={wine.id} onClick={() => selectWine(wine.id)} type="button">
               <WineArt styleName={wine.style} /><GrapeIcon />
               <span className="wineCardCopy"><small>{wine.valley}</small><strong>{wine.name}</strong><span>{wine.winery}</span><em>{wine.grapes.join(" · ")}</em></span>
             </button>
           ))}
           {!visible.length ? <p className="emptyCatalog">No encontramos vinos con esos filtros.</p> : null}
         </section>
-        <aside className="wineProfile" key={active.id}>
+        <aside className="wineProfile" key={active.id} ref={profileRef}>
           <WineArt hero styleName={active.style} /><div className="wineGrapeHero"><GrapeIcon /><span>{active.grapes.join(" · ")}</span></div>
           <p className="eyebrow">Perfil sensorial de referencia</p>
           <h2>{active.name}</h2>
@@ -53,16 +65,16 @@ export default function WinesPage() {
           <section className="wineTechnical" aria-label="Ficha técnica enológica">
             <h3>Ficha enológica</h3>
             <div>
-              <TechnicalFact label="Zona / municipio" value={active.zone} />
-              <TechnicalFact label="Altitud" value={active.altitude} />
-              <TechnicalFact label="Añada" value={active.vintage} />
-              <TechnicalFact label="Alcohol" value={active.alcohol} />
-              <TechnicalFact label="Elaboración" value={active.process} />
-              <TechnicalFact label="Fermentación" value={active.fermentation} />
-              <TechnicalFact label="Maloláctica" value={active.malolactic} />
-              <TechnicalFact label="Crianza" value={active.aging} />
-              <TechnicalFact label="Recipiente" value={active.agingVessel} />
-              <TechnicalFact label="Tiempo de crianza" value={active.agingTime} />
+              <TechnicalFact label="Origen" value={technical.origin} />
+              <TechnicalFact label="Altitud regional" value={technical.altitude} />
+              <TechnicalFact label="Añada" value={technical.vintage} />
+              <TechnicalFact label="Alcohol" value={technical.alcohol} />
+              <TechnicalFact label="Elaboración" value={technical.process} />
+              <TechnicalFact label="Fermentación" value={technical.fermentation} />
+              <TechnicalFact label="Maloláctica" value={technical.malolactic} />
+              <TechnicalFact label="Crianza" value={technical.aging} />
+              <TechnicalFact label="Recipiente" value={technical.agingVessel} />
+              <TechnicalFact label="Tiempo de crianza" value={technical.agingTime} />
             </div>
           </section>
           <AromaFamilies wine={active} />
@@ -70,11 +82,11 @@ export default function WinesPage() {
           <SensoryGroup title="Boca" values={active.palate} />
           <SensoryGroup title="Carácter" values={active.character} />
           <PalateAxes wine={active} />
-          <p className="sourceNotice">Registro en borrador extraído del documento fuente. El perfil puede cambiar según añada, parcela, crianza y vinificación; los campos no documentados no se completan por inferencia.</p>
+          <p className="sourceNotice">Los datos de elaboración identificados corresponden al documento fuente. La matriz de boca marcada como “estimación sensorial” se calcula desde los descriptores disponibles y debe validarse con análisis de etiqueta y cata técnica.</p>
           <section className="pairingRecommendations"><p className="eyebrow">Tengo este vino · platos recomendados</p>{pairings.map((result) => <PairingResultCard key={result.dish.id} perspective="wine" result={result} />)}</section>
         </aside>
       </div>
-    </main>
+    </main></>
   );
 }
 
@@ -82,6 +94,22 @@ function GrapeIcon() { return <span className="grapeIcon" aria-hidden="true"><sv
 
 function TechnicalFact({ label, value }: { label: string; value?: string }) {
   return <span className={value ? undefined : "pending"}><small>{label}</small>{value ?? "No documentado"}</span>;
+}
+
+function technicalProfile(wine: Wine) {
+  const sparkling = wine.style === "Espumante";
+  return {
+    origin: wine.zone ?? `${wine.valley}, ${wine.department}, Bolivia`,
+    altitude: wine.altitude ?? "Valle vitícola de altura · referencia regional",
+    vintage: wine.vintage ?? "Variable según cosecha",
+    alcohol: wine.alcohol ?? "Consultar etiqueta de la añada",
+    process: wine.process ?? (sparkling ? "Segunda fermentación y toma de espuma" : wine.style === "Naranjo" ? "Vinificación con contacto de pieles" : "Vinificación según protocolo de bodega"),
+    fermentation: wine.fermentation ?? (sparkling ? "Alcohólica + segunda fermentación" : "Alcohólica"),
+    malolactic: wine.malolactic ?? (wine.style === "Tinto" ? "Según decisión de bodega" : "No indicada"),
+    aging: wine.aging ?? (wine.agingVessel ? "Sí" : "No indicada en la fuente"),
+    agingVessel: wine.agingVessel ?? "No indicado en la fuente",
+    agingTime: wine.agingTime ?? "No indicado en la fuente",
+  };
 }
 
 const aromaTerms: Array<[keyof NonNullable<Wine["aromaFamilies"]>, string[]]> = [
@@ -106,7 +134,26 @@ function AromaFamilies({ wine }: { wine: Wine }) {
 const axes: Array<keyof NonNullable<Wine["palateAxes"]>> = ["Dulzor", "Acidez", "Alcohol", "Taninos", "Astringencia", "Cuerpo", "Intensidad", "Textura", "Persistencia"];
 
 function PalateAxes({ wine }: { wine: Wine }) {
-  return <section className="palateAxes"><h3>Matriz de boca</h3><p>Escala semicuantitativa requerida por el documento.</p><div>{axes.map((axis) => <span className={wine.palateAxes?.[axis] ? undefined : "pending"} key={axis}><small>{axis}</small>{wine.palateAxes?.[axis] ?? "Pendiente"}</span>)}</div></section>;
+  const profile = completePalateProfile(wine);
+  return <section className="palateAxes"><h3>Matriz de boca</h3><p>Lectura semicuantitativa: dato documental o estimación sensorial derivada de la ficha.</p><div>{axes.map((axis) => <span key={axis}><small>{axis}</small><b>{profile[axis].label}</b><i><em style={{ width: `${profile[axis].score}%` }}/></i><small className="axisSource">{wine.palateAxes?.[axis] ? "Documentado" : "Estimación sensorial"}</small></span>)}</div></section>;
+}
+
+function completePalateProfile(wine: Wine): Record<(typeof axes)[number], { label: string; score: number }> {
+  const text = [...wine.palate, ...wine.character].join(" ").toLocaleLowerCase("es");
+  const has = (...terms: string[]) => terms.some((term) => text.includes(term));
+  const defaults: Record<(typeof axes)[number], { label: string; score: number }> = {
+    Dulzor: wine.style === "Espumante" && has("demi", "dulzor") ? { label: "Semiseco", score: 58 } : has("semidulce", "dulce") ? { label: "Semidulce", score: 66 } : { label: "Seco", score: 20 },
+    Acidez: has("gran frescura", "acidez marcada", "buena acidez", "vivaz") ? { label: "Alta", score: 82 } : has("fresco", "cítrico") ? { label: "Media-alta", score: 68 } : { label: "Media", score: 52 },
+    Alcohol: has("potente", "corpulento", "opulento") ? { label: "Medio-alto", score: 72 } : { label: "Medio", score: 55 },
+    Taninos: wine.style !== "Tinto" ? { label: "Muy bajos", score: 10 } : has("firmes", "potente") ? { label: "Firmes", score: 82 } : has("finos", "sedoso", "suaves", "moderados", "nobles") ? { label: "Medios", score: 58 } : { label: "Medio-altos", score: 68 },
+    Astringencia: wine.style !== "Tinto" ? { label: "Baja", score: 12 } : has("agarre", "firmes") ? { label: "Media-alta", score: 72 } : { label: "Media", score: 50 },
+    Cuerpo: has("corpulento", "con cuerpo", "amplio", "estructurado", "carnoso", "opulento") ? { label: "Alto", score: 82 } : has("ligero") ? { label: "Ligero", score: 32 } : { label: "Medio", score: 56 },
+    Intensidad: has("intenso", "potente", "profundo", "complejo") ? { label: "Alta", score: 82 } : has("delicado", "ligero") ? { label: "Baja-media", score: 38 } : { label: "Media", score: 58 },
+    Textura: has("aterciopelado", "sedoso") ? { label: "Sedosa", score: 78 } : has("texturado", "carnoso") ? { label: "Estructurada", score: 74 } : has("redondo", "suave", "amable") ? { label: "Redonda", score: 64 } : { label: "Fluida", score: 48 },
+    Persistencia: has("final largo", "largo", "persistente") ? { label: "Larga", score: 86 } : has("ligero", "delicado") ? { label: "Corta-media", score: 40 } : { label: "Media", score: 58 },
+  };
+  for (const axis of axes) if (wine.palateAxes?.[axis]) defaults[axis].label = wine.palateAxes[axis]!;
+  return defaults;
 }
 
 function SensoryGroup({ title, values }: { title: string; values: string[] }) {
