@@ -5,7 +5,7 @@ export default function HomePage() {
     <main className="landing">
       <div className="landingVines" aria-hidden="true" />
       <section className="institutionalIntro">
-        <img className="facultyLogo" src="/images/institutional/logo-fcyt.png" alt="Facultad de Ciencias y Tecnología UMRPSFXCH" />
+        <div className="facultyLogoCard"><img className="facultyLogo" src="/images/institutional/logo-fcyt.png" alt="Facultad de Ciencias y Tecnología UMRPSFXCH" /><span>Universidad San Francisco Xavier de Chuquisaca</span></div>
         <div className="landingCopy">
           <p className="eyebrow">Enología · Gastronomía · Inteligencia explicable</p>
           <h1>Bolivia en la copa</h1>
