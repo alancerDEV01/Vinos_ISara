@@ -245,7 +245,7 @@ export default function BoliviaExperience() {
   const enterDepartment = (destination: "vinos" | "platos") => {
     if (journey) return;
     setJourney(destination);
-    window.setTimeout(() => router.push(`/${destination}?departamento=${encodeURIComponent(selected)}&entrada=territorio`), 1450);
+    window.setTimeout(() => router.push(`/${destination}?departamento=${encodeURIComponent(selected)}&entrada=territorio`), 1850);
   };
 
   useEffect(() => setGalleryIndex(0), [selected]);
@@ -307,7 +307,11 @@ export default function BoliviaExperience() {
         aria-label="Mapa tridimensional interactivo de Bolivia"
       >
         {rainy ? <div className="rainLayer" aria-hidden="true" /> : null}
-        {journey ? <div className="territoryJourney" role="status" aria-live="polite"><div className="journeyCloud cloudOne"/><div className="journeyCloud cloudTwo"/><div className="journeyCloud cloudThree"/><div className="journeyPortal"><small>Entrando a {selected}</small><strong>{journey === "vinos" ? "Viñedos de altura" : "Sabores del territorio"}</strong><span>Analizando paisaje, cultura y perfil sensorial…</span></div></div> : null}
+        {journey ? <div className={`territoryJourney journey-${journey}`} role="status" aria-live="polite">
+          <div className="journeyHorizon"/><div className="journeyParticles"/><div className="journeyFlash"/>
+          <div className="journeyCloud cloudOne"/><div className="journeyCloud cloudTwo"/><div className="journeyCloud cloudThree"/><div className="journeyCloud cloudFour"/>
+          <div className="journeyPortal"><span className="journeyEmblem" aria-hidden="true">{journey === "vinos" ? "V" : "P"}</span><small>Entrando a {selected}</small><strong>{journey === "vinos" ? "Viñedos de altura" : "Sabores del territorio"}</strong><span>{journey === "vinos" ? "Descubriendo cepas, bodegas y perfiles sensoriales…" : "Descubriendo platos, ingredientes y memoria cultural…"}</span><i><em/></i></div>
+        </div> : null}
         <Canvas
           camera={{ position: [0, 13, 2.8], fov: 38 }}
           dpr={lowPower ? 1 : [1, 1.35]}
