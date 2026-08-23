@@ -34,7 +34,10 @@ export default function DishesPage() {
       <section className="catalogIntroPanel dishIntroPanel">
         <header className="dishHeader">
           <div><p className="eyebrow">Patrimonio gastronómico</p><h1>{department !== "Todos" ? `Sabores de ${department}` : "Sabores de Bolivia"}</h1><p>Preparaciones regionales caracterizadas para construir maridajes explicables.</p></div>
-          <nav><Link href="/vinos">Explorar vinos</Link><Link href="/explorar">Volver al mapa 3D</Link></nav>
+          <nav className="dishHeaderActions">
+            <Link className="primary" href="/vinos"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4.1 4.1 0 0 1-8 0L7 3Z"/><path d="M12 13.3V21M8.7 21h6.6"/></svg></span><strong>Explorar vinos</strong></Link>
+            <Link href="/explorar"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7.5 9 5l6 2.5L20 5v11.5L15 19l-6-2.5L4 19V7.5Z"/><path d="M9 5v11.5M15 7.5V19"/></svg></span><strong>Volver al mapa 3D</strong></Link>
+          </nav>
         </header>
         <RegionArrival department={department === "Todos" ? "" : department} mode="platos" />
         <section className="dishToolbar" aria-label="Filtros gastronómicos">

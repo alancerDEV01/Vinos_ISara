@@ -37,7 +37,7 @@ export function evaluatePairing(wine: Wine, dish: Dish): PairingResult {
   const aromaticMatch = has(wine.nose, ["especia", "pimienta", "clavo", "canela", "humo", "tostado"]) && has(dish.aromas, ["Especiada", "Ahumada", "Tostada"]);
   const textureMatch = has([...wine.palate, ...wine.character], ["cremos", "untuoso", "carnoso", "sedoso", "textur"])
     && has(dish.textures, ["Cremosa", "Untuosa", "Jugosa"]);
-  const affinity = Math.round(Math.min(1, .68 * bodyMatch + (aromaticMatch ? .19 : .08) + (textureMatch ? .13 : .05)) * 100);
+  const affinityBase = Math.min(1, .68 * bodyMatch + (aromaticMatch ? .19 : .08) + (textureMatch ? .13 : .05));
   const acidBalance = Math.min(acidity, fat + .12);
   const sweetHeat = spice > .25 ? Math.min(sweetness + .12, spice) : .45;
   const tanninProtein = has(dish.ingredients, ["Carne", "Cerdo", "Charque"]) ? tannins : .38;
@@ -62,8 +62,14 @@ export function evaluatePairing(wine: Wine, dish: Dish): PairingResult {
   const signature = [...`${wine.id}:${dish.id}`].reduce((sum, character) => sum + character.charCodeAt(0), 0);
   const individualVariation = ((signature * 17) % 9 - 4) / 100;
   culinary = Math.max(.2, Math.min(1, culinary + individualVariation));
-  const contrast = Math.round((.38 * acidBalance + .19 * sweetHeat + .24 * tanninProtein + .19 * bubblesFry) * 100);
-  const culture = sameRegion ? (wine.valley.includes("Cinti") || wine.valley.includes("Tarija") ? 96 : 88) : 30;
+  const affinityVariation = ((signature * 13) % 13) - 6;
+  const contrastVariation = ((signature * 19) % 15) - 7;
+  const affinity = Math.max(28, Math.min(98, Math.round((.86 * affinityBase + .14 * culinary) * 100) + affinityVariation));
+  const contrastBase = .34 * acidBalance + .17 * sweetHeat + .22 * tanninProtein + .17 * bubblesFry + .1 * culinary;
+  const contrast = Math.max(24, Math.min(96, Math.round(contrastBase * 100) + contrastVariation));
+  const culture = sameRegion
+    ? 88 + ((signature * 7) % 10)
+    : 24 + ((signature * 11) % 17);
   const global = Math.round(.29 * affinity + .36 * contrast + .09 * culture + .26 * culinary * 100);
   const reasons = [
     `La intensidad ${dish.intensity === "Alto" ? "alta" : dish.intensity.toLocaleLowerCase("es")} del plato encuentra un vino de cuerpo ${wineBody > .7 ? "amplio" : wineBody > .45 ? "medio" : "ligero"}.`,
