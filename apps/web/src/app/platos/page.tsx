@@ -53,7 +53,7 @@ export default function DishesPage() {
             <p className="eyebrow">Perfil organoléptico preliminar</p><h2>{active.name}</h2><p className="dishMeta">{active.region} · {active.department}</p><p>{active.description}</p>
             <div className="dishLevels"><Level label="Intensidad" value={active.intensity} /><Level label="Grasa" value={active.fat} /><Level label="Picor" value={active.spice} /></div>
             <TagGroup title="Sabores" values={active.tastes} /><TagGroup title="Aromas" values={active.aromas} /><TagGroup title="Texturas" values={active.textures} /><TagGroup title="Técnicas" values={active.techniques} /><TagGroup title="Ingredientes dominantes" values={active.ingredients} />
-            <section className="pairingRecommendations"><p className="eyebrow">Tengo este plato · vinos recomendados</p>{pairings.map((result) => <PairingResultCard key={result.wine.id} perspective="dish" result={result} />)}</section>
+            <section className="pairingRecommendations"><div className="aiRecommendationHeading"><span>IA</span><div><p className="eyebrow">Recomendación inteligente</p><h3>La IA recomienda estos vinos para este plato</h3></div></div>{pairings.map((result) => <PairingResultCard key={result.wine.id} perspective="dish" result={result} />)}</section>
           </div>
         </aside>
       </div>

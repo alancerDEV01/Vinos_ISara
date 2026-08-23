@@ -76,7 +76,7 @@ export default function WinesPage() {
           <SensoryGroup title="Boca" values={active.palate} />
           <SensoryGroup title="Carácter" values={active.character} />
           <PalateAxes wine={active} />
-          <section className="pairingRecommendations"><p className="eyebrow">Tengo este vino · platos recomendados</p>{pairings.map((result) => <PairingResultCard key={result.dish.id} perspective="wine" result={result} />)}</section>
+          <section className="pairingRecommendations"><div className="aiRecommendationHeading"><span>IA</span><div><p className="eyebrow">Recomendación inteligente</p><h3>La IA recomienda estos platos para este vino</h3></div></div>{pairings.map((result) => <PairingResultCard key={result.dish.id} perspective="wine" result={result} />)}</section>
         </aside>
       </div>
     </main></>
