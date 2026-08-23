@@ -299,7 +299,7 @@ export default function BoliviaExperience() {
       </header>
       <section className="experience">
       <div
-        className={`scene weather-${weather.isDay ? "day" : "night"}${rainy ? " weather-rain" : ""}${stormy ? " weather-storm" : ""}`}
+        className={`scene weather-${weather.isDay ? "day" : "night"}${rainy ? " weather-rain" : ""}${stormy ? " weather-storm" : ""}${journey ? " journey-active" : ""}`}
         ref={sceneRef}
         style={weatherStyle}
         aria-label="Mapa tridimensional interactivo de Bolivia"
@@ -308,7 +308,7 @@ export default function BoliviaExperience() {
         {journey ? <div className={`territoryJourney journey-${journey}`} role="status" aria-live="polite">
           <div className="journeyHorizon"/><div className="journeyParticles"/><div className="journeyFlash"/>
           <div className="journeyCloud cloudOne"/><div className="journeyCloud cloudTwo"/><div className="journeyCloud cloudThree"/><div className="journeyCloud cloudFour"/>
-          <div className="journeyPortal"><span className="journeyEmblem" aria-hidden="true">{journey === "vinos" ? "V" : "P"}</span><small>Entrando a {selected}</small><strong>{journey === "vinos" ? "Viñedos de altura" : "Sabores del territorio"}</strong><span>{journey === "vinos" ? "Descubriendo cepas, bodegas y perfiles sensoriales…" : "Descubriendo platos, ingredientes y memoria cultural…"}</span><i><em/></i></div>
+          <div className="journeyPortal"><span className="journeyEmblem" aria-hidden="true">{journey === "vinos" ? <WineIcon /> : <DishIcon />}</span><small>Entrando a {selected}</small><strong>{journey === "vinos" ? "Viñedos de altura" : "Sabores del territorio"}</strong><span>{journey === "vinos" ? "Descubriendo cepas, bodegas y perfiles sensoriales…" : "Descubriendo platos, ingredientes y memoria cultural…"}</span><i><em/></i></div>
         </div> : null}
         <Canvas
           camera={{ position: [0, 13, 2.8], fov: 38 }}
@@ -366,8 +366,8 @@ export default function BoliviaExperience() {
           <div className="carouselDots">{gallery.map((item, index) => <button aria-label={`Ver ${item.title}`} className={index === galleryIndex ? "active" : undefined} key={item.title} onClick={() => setGalleryIndex(index)} type="button" />)}</div>
         </section>
         <nav className="departmentActions" aria-label={`Explorar contenido de ${selected}`}>
-          <button onClick={() => enterDepartment("vinos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4.1 4.1 0 0 1-8 0L7 3Z"/><path d="M12 13.3V21M8.7 21h6.6"/></svg></span><strong>Vinos</strong><small>Descubrir etiquetas</small></button>
-          <button onClick={() => enterDepartment("platos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="3.4"/><path d="M3.5 4v7M5.5 4v7M4.5 11v9M20 4v16M20 4c-2 1.7-2.1 5.7 0 7"/></svg></span><strong>Platos</strong><small>Ver gastronomía</small></button>
+          <button onClick={() => enterDepartment("vinos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><WineIcon /></span><strong>Vinos</strong><small>Descubrir etiquetas</small></button>
+          <button onClick={() => enterDepartment("platos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><DishIcon /></span><strong>Platos</strong><small>Ver gastronomía</small></button>
         </nav>
         <div className="scoreGrid" aria-label="Puntuaciones de maridaje de demostración">
           <div className="score"><strong>87</strong>Afinidad</div>
@@ -393,4 +393,12 @@ export default function BoliviaExperience() {
       </section>
     </>
   );
+}
+
+function WineIcon() {
+  return <svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4.1 4.1 0 0 1-8 0L7 3Z"/><path d="M12 13.3V21M8.7 21h6.6"/></svg>;
+}
+
+function DishIcon() {
+  return <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="3.4"/><path d="M3.5 4v7M5.5 4v7M4.5 11v9M20 4v16M20 4c-2 1.7-2.1 5.7 0 7"/></svg>;
 }
