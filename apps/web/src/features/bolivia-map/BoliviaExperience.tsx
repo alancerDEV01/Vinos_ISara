@@ -4,7 +4,6 @@ import { Canvas } from "@react-three/fiber";
 import { AdaptiveDpr, CameraControls } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BoliviaDepartmentMap, getBoliviaMapCenter, getDepartmentCenter, getDepartmentSize, getDepartmentSpan } from "./BoliviaDepartmentMap";
 import { departmentContent } from "./departmentContent";
@@ -136,7 +135,6 @@ export default function BoliviaExperience() {
   const [userLocation, setUserLocation] = useState<UserLocation>(SUCRE_LOCATION);
   const [locating, setLocating] = useState(true);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const [pairingMode, setPairingMode] = useState<"wine" | "dish">("wine");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [journey, setJourney] = useState<"vinos" | "platos" | null>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -371,18 +369,6 @@ export default function BoliviaExperience() {
           <button onClick={() => enterDepartment("vinos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4.1 4.1 0 0 1-8 0L7 3Z"/><path d="M12 13.3V21M8.7 21h6.6"/></svg></span><strong>Vinos</strong><small>Descubrir etiquetas</small></button>
           <button onClick={() => enterDepartment("platos")} type="button"><span className="departmentActionIcon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="3.4"/><path d="M3.5 4v7M5.5 4v7M4.5 11v9M20 4v16M20 4c-2 1.7-2.1 5.7 0 7"/></svg></span><strong>Platos</strong><small>Ver gastronomía</small></button>
         </nav>
-        <section className="pairingStudio" key={`${selected}-pairing`}>
-          <div className="pairingStudioHead"><span>✦ IA sensorial</span><small>Vista previa explicable</small></div>
-          <div className="pairingModes" role="tablist" aria-label="Dirección de la recomendación">
-            <button aria-selected={pairingMode === "wine"} className={pairingMode === "wine" ? "active" : undefined} onClick={() => setPairingMode("wine")} role="tab" type="button">Tengo un vino</button>
-            <button aria-selected={pairingMode === "dish"} className={pairingMode === "dish" ? "active" : undefined} onClick={() => setPairingMode("dish")} role="tab" type="button">Tengo un plato</button>
-          </div>
-          <div className="pairingResult" key={`${selected}-${pairingMode}`}>
-            <div className="pairingDishVisual">{content.dish.image ? <img alt={content.dish.imageAlt ?? content.dish.name} src={content.dish.image} /> : <span>◌</span>}<i /></div>
-            <div><small>{pairingMode === "wine" ? "Plato regional sugerido" : "Explorar vino compatible"}</small><h3>{pairingMode === "wine" ? content.dish.name : selected === "Tarija" ? "Tannat de Tarija" : selected === "Chuquisaca" ? "Vischoqueña de Cinti" : "Vino boliviano por contraste"}</h3><p>{pairingMode === "wine" ? "La IA comparará intensidad, grasa, picor, aromas, textura y vínculo territorial." : "La IA contrastará acidez, taninos, cuerpo, dulzor y familias aromáticas con el plato."}</p></div>
-          </div>
-          <div className="pairingLinks"><Link href={pairingMode === "wine" ? "/vinos" : "/platos"}>Elegir {pairingMode === "wine" ? "vino" : "plato"}</Link><span>afinidad · contraste · cultura</span></div>
-        </section>
         <div className="scoreGrid" aria-label="Puntuaciones de maridaje de demostración">
           <div className="score"><strong>87</strong>Afinidad</div>
           <div className="score"><strong>91</strong>Contraste</div>

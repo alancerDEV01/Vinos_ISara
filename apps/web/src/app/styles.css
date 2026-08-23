@@ -281,25 +281,6 @@ h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-heig
   .pairingRecommendations { grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; }
   .pairingRecommendations>.eyebrow { grid-column:1/-1; }
 }
-@media (min-width:801px) {
-  .sidePanel.mapOverlayPanel { position:absolute; inset:0; z-index:18; width:100%; max-height:none; margin:0; padding:1rem clamp(1.25rem,5vw,5rem) 3rem; overflow-x:hidden; overflow-y:auto; border:0; border-radius:0; background:linear-gradient(180deg,rgba(4,12,16,.03) 0,rgba(4,12,16,.1) 38%,rgba(5,12,13,.82) 72%,#07100f 100%); box-shadow:none; backdrop-filter:none; transform:none; animation:mobileMapStoryIn .45s cubic-bezier(.16,.84,.28,1); scrollbar-width:thin; }
-  .sidePanel.mapOverlayPanel::before { display:none; }
-  .scene:has(.mapOverlayPanel) canvas { filter:saturate(1.2) contrast(1.08) brightness(1.08); transform:translate3d(0,var(--map-scroll-y,0px),0); will-change:transform; }
-  .scene:has(.mapOverlayPanel) .mapLabel { opacity:0!important; pointer-events:none; }
-  .scene:has(.mapOverlayPanel) .mapStatus { opacity:0; }
-  .scene:has(.mapOverlayPanel) .mapReset { right:1rem; }
-  .mapOverlayPanel .overlayClose { position:sticky; top:0; z-index:8; display:flex; width:max-content; margin:0 0 0 auto; }
-  .mapOverlayPanel .territoryHeader { display:flex; min-height:42vh; max-width:900px; flex-direction:column; align-items:center; justify-content:flex-end; margin:0 auto; padding:4rem 1rem 1.25rem; border:0; background:none; text-align:center; text-shadow:0 3px 18px rgba(0,0,0,.9); }
-  .mapOverlayPanel .territoryHeader::after { display:none; }
-  .mapOverlayPanel .territoryHeader h2 { font-size:clamp(4rem,8vw,7rem); }
-  .mapOverlayPanel .territoryDescription { max-width:680px; color:#f0e8dc; }
-  .mapOverlayPanel .territoryFacts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:min(100%,680px); }
-  .mapOverlayPanel .placeCarousel,.mapOverlayPanel .departmentActions,.mapOverlayPanel .pairingStudio,.mapOverlayPanel .scoreGrid,.mapOverlayPanel .demoNotice,.mapOverlayPanel .departmentListLabel,.mapOverlayPanel .departmentList { width:min(100%,900px); margin-right:auto; margin-left:auto; }
-  .mapOverlayPanel .placeSlide { min-height:430px; }
-  .mapOverlayPanel .placeCopy h3 { font-size:clamp(2.8rem,5vw,5rem); }
-  .mapOverlayPanel .departmentActions { margin-top:1.2rem; }
-  .mapOverlayPanel .pairingStudio { margin-top:1.2rem; }
-}
 .regionArrivalControls { right:50%; bottom:.8rem; gap:0; transform:translateX(50%); }.regionArrivalControls>button { display:none; }.regionArrivalControls>div { gap:.3rem; padding:.38rem .5rem; background:rgba(7,12,11,.62); border:1px solid rgba(238,192,91,.22); border-radius:99px; backdrop-filter:blur(8px); }.regionArrivalControls>div button.active { width:24px; }
 .pairingWineImage { position:relative; display:grid; width:calc(100% + 1.7rem); height:165px; margin:-.85rem -.85rem .8rem; overflow:hidden; background-color:#171216; background-image:linear-gradient(180deg,transparent 35%,rgba(8,6,8,.86)),url('/images/generated/wine-styles-atlas.png'); background-size:auto,300% 200%; background-position:center,var(--wine-x) var(--wine-y); background-repeat:no-repeat; border-radius:16px 16px 7px 7px; place-items:end start; }.pairingWineImage::after { content:""; position:absolute; inset:0; background:radial-gradient(circle at 75% 22%,rgba(242,202,113,.24),transparent 30%); }.pairingWineImage i { position:absolute; inset:auto -8% -48% auto; width:180px; height:180px; border:1px solid rgba(231,184,82,.32); border-radius:50%; }.pairingWineImage strong { position:relative; z-index:2; padding:.8rem; color:#f0cb76; font-family:Georgia,serif; font-size:1rem; text-shadow:0 3px 10px #000; }.aiRecommendationHeading { display:grid; grid-template-columns:auto 1fr; gap:.7rem; align-items:center; margin:.35rem 0 .15rem; }.aiRecommendationHeading>span { display:grid; width:42px; height:42px; color:#251608; background:linear-gradient(145deg,#f4cf70,#d69830); border-radius:13px; place-items:center; font-weight:900; }.aiRecommendationHeading p { margin:0!important; font-size:.55rem!important; }.aiRecommendationHeading h3 { margin:.1rem 0 0!important; font-family:Georgia,serif; font-size:clamp(1.2rem,2vw,1.65rem)!important; line-height:1.1; }
 @media (min-width:901px) { .aiRecommendationHeading { grid-column:1/-1; }.wineProfile,.dishProfile { border-color:rgba(218,174,78,.55); box-shadow:0 28px 75px rgba(0,0,0,.3); }.catalogLayout,.dishLayout { max-width:1380px; }.wineGrid,.dishGrid { padding-top:.35rem; border-top:1px solid rgba(217,164,65,.18); } }
