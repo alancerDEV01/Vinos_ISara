@@ -30,14 +30,16 @@ export default function DishesPage() {
 
   return (
     <><CatalogTopbar context="Gastronomía boliviana"/><main className="dishPage">
-      <header className="dishHeader">
-        <div><p className="eyebrow">Patrimonio gastronómico</p><h1>{department !== "Todos" ? `Sabores de ${department}` : "Sabores de Bolivia"}</h1><p>Preparaciones regionales caracterizadas para construir maridajes explicables.</p></div>
-        <nav><Link href="/vinos">Explorar vinos</Link><Link href="/explorar">Mapa 3D</Link></nav>
-      </header>
-      <RegionArrival department={department === "Todos" ? "" : department} mode="platos" />
-      <section className="dishToolbar" aria-label="Filtros gastronómicos">
-        <label><span>Buscar plato, región o ingrediente</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ej. saice, Tarija, maní…" /></label>
-        <div className="departmentFilters">{departments.map((item) => <button className={department === item ? "active" : undefined} key={item} onClick={() => setDepartment(item)} type="button">{item}</button>)}</div>
+      <section className="catalogIntroPanel dishIntroPanel">
+        <header className="dishHeader">
+          <div><p className="eyebrow">Patrimonio gastronómico</p><h1>{department !== "Todos" ? `Sabores de ${department}` : "Sabores de Bolivia"}</h1><p>Preparaciones regionales caracterizadas para construir maridajes explicables.</p></div>
+          <nav><Link href="/vinos">Explorar vinos</Link><Link href="/explorar">Volver al mapa 3D</Link></nav>
+        </header>
+        <RegionArrival department={department === "Todos" ? "" : department} mode="platos" />
+        <section className="dishToolbar" aria-label="Filtros gastronómicos">
+          <label><span>Buscar plato, región o ingrediente</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ej. saice, Tarija, maní…" /></label>
+          <div className="departmentFilters">{departments.map((item) => <button className={department === item ? "active" : undefined} key={item} onClick={() => setDepartment(item)} type="button">{item}</button>)}</div>
+        </section>
       </section>
       <div className="dishLayout">
         <section className="dishGrid" aria-label={`${visible.length} platos encontrados`}>

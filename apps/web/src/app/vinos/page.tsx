@@ -32,14 +32,16 @@ export default function WinesPage() {
 
   return (
     <><CatalogTopbar context="Enología boliviana"/><main className="catalogPage">
-      <header className="catalogHeader">
-        <div><p className="eyebrow">Base sensorial boliviana</p><h1>{department ? `Vinos de ${department}` : "Vinos de altura"}</h1><p>Catálogo documental de Cinti y del Valle Central de Tarija.</p></div>
-        <Link href="/explorar">Volver al mapa 3D</Link>
-      </header>
-      <RegionArrival department={department} mode="vinos" />
-      <section className="catalogToolbar" aria-label="Filtros del catálogo">
-        <label><span>Buscar vino, bodega o cepa</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ej. Tannat, Aranjuez, Vischoqueña…" /></label>
-        <div className="wineFilters">{styles.map((item) => <button className={style === item ? "active" : undefined} key={item} onClick={() => setStyle(item)} type="button">{item}</button>)}</div>
+      <section className="catalogIntroPanel">
+        <header className="catalogHeader">
+          <div><p className="eyebrow">Base sensorial boliviana</p><h1>{department ? `Vinos de ${department}` : "Vinos de altura"}</h1><p>Catálogo documental de Cinti y del Valle Central de Tarija.</p></div>
+          <Link href="/explorar">Volver al mapa 3D</Link>
+        </header>
+        <RegionArrival department={department} mode="vinos" />
+        <section className="catalogToolbar" aria-label="Filtros del catálogo">
+          <label><span>Buscar vino, bodega o cepa</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ej. Tannat, Aranjuez, Vischoqueña…" /></label>
+          <div className="wineFilters">{styles.map((item) => <button className={style === item ? "active" : undefined} key={item} onClick={() => setStyle(item)} type="button">{item}</button>)}</div>
+        </section>
       </section>
       <div className="catalogLayout">
         <section className="wineGrid" aria-label={`${visible.length} vinos encontrados`}>
