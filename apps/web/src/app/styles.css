@@ -285,3 +285,25 @@ h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-heig
 .pairingWineImage { position:relative; display:grid; width:calc(100% + 1.7rem); height:165px; margin:-.85rem -.85rem .8rem; overflow:hidden; background-color:#171216; background-image:linear-gradient(180deg,transparent 35%,rgba(8,6,8,.86)),url('/images/generated/wine-styles-atlas.png'); background-size:auto,300% 200%; background-position:center,var(--wine-x) var(--wine-y); background-repeat:no-repeat; border-radius:16px 16px 7px 7px; place-items:end start; }.pairingWineImage::after { content:""; position:absolute; inset:0; background:radial-gradient(circle at 75% 22%,rgba(242,202,113,.24),transparent 30%); }.pairingWineImage i { position:absolute; inset:auto -8% -48% auto; width:180px; height:180px; border:1px solid rgba(231,184,82,.32); border-radius:50%; }.pairingWineImage strong { position:relative; z-index:2; padding:.8rem; color:#f0cb76; font-family:Georgia,serif; font-size:1rem; text-shadow:0 3px 10px #000; }.aiRecommendationHeading { display:grid; grid-template-columns:auto 1fr; gap:.7rem; align-items:center; margin:.35rem 0 .15rem; }.aiRecommendationHeading>span { display:grid; width:42px; height:42px; color:#251608; background:linear-gradient(145deg,#f4cf70,#d69830); border-radius:13px; place-items:center; font-weight:900; }.aiRecommendationHeading p { margin:0!important; font-size:.55rem!important; }.aiRecommendationHeading h3 { margin:.1rem 0 0!important; font-family:Georgia,serif; font-size:clamp(1.2rem,2vw,1.65rem)!important; line-height:1.1; }
 @media (min-width:901px) { .aiRecommendationHeading { grid-column:1/-1; }.wineProfile,.dishProfile { border-color:rgba(218,174,78,.55); box-shadow:0 28px 75px rgba(0,0,0,.3); }.catalogLayout,.dishLayout { max-width:1380px; }.wineGrid,.dishGrid { padding-top:.35rem; border-top:1px solid rgba(217,164,65,.18); } }
 @media (max-width:600px) { .regionArrivalControls { right:50%; bottom:.55rem; }.pairingWineImage { height:145px; } }
+
+/* Proporciones editoriales para pantallas anchas: evita imágenes y fichas estiradas. */
+@media (min-width:901px) {
+  .catalogPage,.dishPage { padding-right:max(2rem,calc((100vw - 1380px)/2)); padding-left:max(2rem,calc((100vw - 1380px)/2)); }
+  .catalogHeader,.dishHeader,.catalogToolbar,.dishToolbar,.catalogLayout,.dishLayout { width:100%; max-width:1280px; }
+  .regionArrival { grid-template-columns:minmax(280px,.72fr) minmax(520px,1.28fr); width:min(100%,1180px); max-width:1180px; padding:1rem; }
+  .regionArrivalCopy { min-width:0; padding:clamp(1rem,2vw,1.65rem); }
+  .regionArrivalCopy h2 { max-width:100%; font-size:clamp(3rem,4.6vw,4.8rem); overflow-wrap:anywhere; }
+  .regionArrivalCarousel { width:100%; max-width:760px; justify-self:end; }
+  .regionArrivalCarousel figure { height:auto; aspect-ratio:16/8.3; }
+  .regionArrivalCarousel img { object-position:center; }
+  .wineProfile,.dishProfile { width:min(100%,940px); }
+  .wineArt.hero { height:auto; min-height:0; aspect-ratio:16/6.8; background-size:300% 200%; }
+  .dishHero,.dishHero.generatedDishImage { height:auto; min-height:0; aspect-ratio:16/7.2; object-position:center; }
+  .wineGrid { grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); max-width:1280px; }
+  .dishGrid { grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); max-width:1280px; }
+  .pairingDishImage,.pairingWineImage { height:140px; min-height:140px; }
+}
+@media (min-width:1500px) {
+  .catalogHeader h1,.dishHeader h1 { font-size:clamp(4rem,5vw,5.4rem); }
+  .catalogPage,.dishPage { background-size:100% 100%; }
+}
