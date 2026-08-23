@@ -293,6 +293,7 @@ export default function BoliviaExperience() {
           <span /><span /><span />
         </button>
         <nav aria-label="Principal" className={mobileMenuOpen ? "open" : undefined}>
+          <a href="/">Inicio</a>
           <a href="/vinos">Vinos</a>
           <a href="/platos">Gastronomía</a>
           <a href="/explorar">Regiones</a>

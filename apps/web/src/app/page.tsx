@@ -14,7 +14,6 @@ export default function HomePage() {
           <ExperienceLaunchButton />
         </div>
         <div className="institutionalStack">
-          <div className="facultyLogoCard"><img className="facultyLogo" src="/images/institutional/logo-fcyt.png" alt="Facultad de Ciencias y Tecnología UMRPSFXCH" /><span>Universidad San Francisco Xavier de Chuquisaca</span></div>
           <aside className="authorCard"><img src="/images/institutional/sara-vladislavic.png" alt="Ing. Vladislavic Mendoza Sara Alejandra" /><div><small>Investigación y desarrollo · Versión académica 2026</small><strong>Ing. Vladislavic Mendoza<br />Sara Alejandra</strong><p>Facultad de Ciencias y Tecnología<br />Universidad Mayor, Real y Pontificia de San Francisco Xavier de Chuquisaca</p><a href="mailto:vladislavic.sara@usfx.bo">vladislavic.sara@usfx.bo</a></div></aside>
         </div>
       </section>
