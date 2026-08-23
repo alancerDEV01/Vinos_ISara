@@ -48,10 +48,14 @@ export default function DishesPage() {
           {!visible.length ? <p className="emptyCatalog">No encontramos platos con esos filtros.</p> : null}
         </section>
         <aside className="dishProfile" key={active.id} ref={profileRef}>
-          {active.image ? <img className="dishHero" alt={active.imageAlt ?? ""} src={active.image} /> : <GeneratedDishImage cell={generatedDishCells[active.id] ?? 0} hero />}
           <div className="dishProfileBody">
-            <p className="eyebrow">Perfil organoléptico preliminar</p><h2>{active.name}</h2><p className="dishMeta">{active.region} · {active.department}</p><p>{active.description}</p>
-            <div className="dishLevels"><Level label="Intensidad" value={active.intensity} /><Level label="Grasa" value={active.fat} /><Level label="Picor" value={active.spice} /></div>
+            <div className="profileLead dishProfileLead">
+              <div className="profileMedia">{active.image ? <img className="dishHero" alt={active.imageAlt ?? ""} src={active.image} /> : <GeneratedDishImage cell={generatedDishCells[active.id] ?? 0} hero />}</div>
+              <div className="profileIntro">
+                <p className="eyebrow">Perfil organoléptico preliminar</p><h2>{active.name}</h2><p className="dishMeta">{active.region} · {active.department}</p><p>{active.description}</p>
+                <div className="dishLevels"><Level label="Intensidad" value={active.intensity} /><Level label="Grasa" value={active.fat} /><Level label="Picor" value={active.spice} /></div>
+              </div>
+            </div>
             <TagGroup title="Sabores" values={active.tastes} /><TagGroup title="Aromas" values={active.aromas} /><TagGroup title="Texturas" values={active.textures} /><TagGroup title="Técnicas" values={active.techniques} /><TagGroup title="Ingredientes dominantes" values={active.ingredients} />
             <section className="pairingRecommendations"><div className="aiRecommendationHeading"><span>IA</span><div><p className="eyebrow">Recomendación inteligente</p><h3>La IA recomienda estos vinos para este plato</h3></div></div>{pairings.map((result) => <PairingResultCard key={result.wine.id} perspective="dish" result={result} />)}</section>
           </div>

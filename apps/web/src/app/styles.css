@@ -307,3 +307,23 @@ h1 { font-family: Georgia, serif; font-size: clamp(3rem, 8vw, 6.5rem); line-heig
   .catalogHeader h1,.dishHeader h1 { font-size:clamp(4rem,5vw,5.4rem); }
   .catalogPage,.dishPage { background-size:100% 100%; }
 }
+
+/* Cabecera editorial de las fichas: imagen y datos principales comparten nivel. */
+.profileLead { min-width:0; }
+.profileMedia,.profileIntro { min-width:0; }
+@media (min-width:701px) {
+  .wineProfile,.dishProfile { width:min(100%,1080px); }
+  .profileLead { display:grid; grid-template-columns:minmax(280px,.9fr) minmax(320px,1.1fr); gap:clamp(1rem,2.4vw,2rem); align-items:center; }
+  .profileMedia { overflow:hidden; border:1px solid rgba(220,174,74,.32); border-radius:18px; background:#130d0f; }
+  .profileMedia .wineArt.hero,.profileMedia .dishHero { width:100%; aspect-ratio:4/3; border-radius:0; }
+  .profileMedia .wineGrapeHero { margin:0; border-width:1px 0 0; border-radius:0; }
+  .profileIntro h2 { margin:.2rem 0 .45rem; font-size:clamp(2.35rem,4.1vw,4.15rem); line-height:.98; overflow-wrap:anywhere; }
+  .profileIntro .profileFacts { grid-template-columns:1fr; margin:1rem 0 0; }
+  .profileIntro .dishLevels { margin-top:1rem; }
+  .dishProfileBody { padding:clamp(1.1rem,2vw,1.65rem); }
+}
+@media (max-width:700px) {
+  .profileLead { display:block; }
+  .profileMedia { margin-bottom:1rem; overflow:hidden; border-radius:16px; }
+  .profileMedia .wineArt.hero,.profileMedia .dishHero { aspect-ratio:16/10; }
+}

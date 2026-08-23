@@ -51,11 +51,15 @@ export default function WinesPage() {
           ))}
         </section>
         <aside className="wineProfile" key={active.id} ref={profileRef}>
-          <WineArt hero styleName={active.style} /><div className="wineGrapeHero"><GrapeIcon /><span>{active.grapes.join(" · ")}</span></div>
-          <p className="eyebrow">Perfil sensorial de referencia</p>
-          <h2>{active.name}</h2>
-          <p className="wineMeta">{active.winery} · {active.valley} · {active.department}</p>
-          <div className="profileFacts"><span><small>Estilo</small>{active.style}</span><span><small>Cepa</small>{active.grapes.join(", ")}</span><span><small>Apariencia</small>{active.appearance}</span></div>
+          <div className="profileLead wineProfileLead">
+            <div className="profileMedia"><WineArt hero styleName={active.style} /><div className="wineGrapeHero"><GrapeIcon /><span>{active.grapes.join(" · ")}</span></div></div>
+            <div className="profileIntro">
+              <p className="eyebrow">Perfil sensorial de referencia</p>
+              <h2>{active.name}</h2>
+              <p className="wineMeta">{active.winery} · {active.valley} · {active.department}</p>
+              <div className="profileFacts"><span><small>Estilo</small>{active.style}</span><span><small>Cepa</small>{active.grapes.join(", ")}</span><span><small>Apariencia</small>{active.appearance}</span></div>
+            </div>
+          </div>
           <section className="wineTechnical" aria-label="Ficha técnica enológica">
             <h3>Ficha enológica</h3>
             <div>
