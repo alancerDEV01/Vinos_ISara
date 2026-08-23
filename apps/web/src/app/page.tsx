@@ -5,6 +5,10 @@ export default function HomePage() {
     <main className="landing">
       <div className="landingVines" aria-hidden="true" />
       <div className="landingAura" aria-hidden="true" />
+      <div className="landingWineFlow" aria-hidden="true"><span/><span/><span/></div>
+      <div className="landingOrbits" aria-hidden="true"><i/><i/><i/></div>
+      <div className="landingGrapes landingGrapesLeft" aria-hidden="true" />
+      <div className="landingGrapes landingGrapesRight" aria-hidden="true" />
       <section className="institutionalIntro">
         <div className="landingCopy">
           <p className="eyebrow">Enología · Gastronomía · Inteligencia explicable</p>
